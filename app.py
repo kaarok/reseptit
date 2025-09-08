@@ -8,8 +8,11 @@ import config
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+
 @app.route("/")
 def index():
+    for key in list(session.keys()):
+        session.pop(key)
     return render_template("index.html")
 
 
@@ -23,16 +26,22 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        session["password_not_matching"] = True
+        return redirect("/register")
+    else:
+        session["password_not_matching"] = False
     password_hash = generate_password_hash(password1)
 
     try:
         sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
-
-    return "Tunnus luotu"
+        session["username_taken"] = True
+        return redirect("/register")
+    session["username_taken"] = False
+    
+    session["username"] = username
+    return redirect("/")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -45,13 +54,19 @@ def login():
         password = request.form["password"]
 
         sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
+        password_hash = db.query(sql, [username])
+        if password_hash == []:
+            session["user_not_found"] = True
+            return redirect("/login")
+        session["user_not_found"] = False
+        password_hash = password_hash[0][0]
 
         if check_password_hash(password_hash, password):
             session["username"] = username
             return redirect("/")
         else:
-            return "VIRHE: väärä tunnus tai salasana"
+            session["incorrect_password"] = True
+            return redirect("/login")
 
 @app.route("/logout")
 def logout():
