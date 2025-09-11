@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,8 +12,10 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    for key in list(session.keys()):
-        session.pop(key)
+    session["user_not_found"] = False
+    session["incorrect_password"] = False
+    session["password_not_matching"] = False
+    session["username_taken"] = False
     return render_template("index.html")
 
 
@@ -20,8 +23,8 @@ def index():
 def register():
     return render_template("register.html")
 
-@app.route("/create", methods=["POST"])
-def create():
+@app.route("/create_user", methods=["POST"])
+def create_user():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -71,4 +74,20 @@ def login():
 @app.route("/logout")
 def logout():
     del session["username"]
+    return redirect("/")
+
+@app.route("/new_recipe")
+def new_recipe():
+    return render_template("new_recipe.html")
+
+@app.route("/create_recipe", methods=["POST"])
+def create_recipe():
+    title = request.form["title"]
+    content = request.form["content"]
+    created_at = datetime.datetime.now()
+    sql = "SELECT id FROM users WHERE username = ?"
+    user_id = db.query(sql, [session["username"]])[0][0]
+
+    sql = "INSERT INTO recipes (title, content, created_at, user_id) VALUES (?, ?, ?, ?)"
+    db.execute(sql, [title, content, created_at, user_id])
     return redirect("/")
