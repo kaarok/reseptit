@@ -22,12 +22,12 @@
     <input type="submit" value="Luo tunnus" />
   </form>
 
-  {% if session.password_not_matching %}
+  {% if session.u_password_not_matching %}
   <p>
     VIRHE: salasanat eivät ole samat
   </p>
   {% endif %}
-  {% if session.username_taken %}
+  {% if session.u_username_taken %}
   <p>
     VIRHE: tunnus on jo varattu
   </p>

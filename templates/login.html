@@ -17,12 +17,12 @@
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>
-  {% if session.incorrect_password %}
+  {% if session.u_incorrect_password %}
   <p>
     VIRHE: väärä salasana
   </p>
   {% endif %}
-  {% if session.user_not_found %}
+  {% if session.u_user_not_found %}
   <p>
     VIRHE: käyttäjää ei löydetty
   </p>

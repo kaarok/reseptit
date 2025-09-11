@@ -4,6 +4,7 @@ from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import db
+import forum
 import config
 
 app = Flask(__name__)
@@ -12,11 +13,10 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    session["user_not_found"] = False
-    session["incorrect_password"] = False
-    session["password_not_matching"] = False
-    session["username_taken"] = False
-    return render_template("index.html")
+    [session.pop(key) for key in list(session.keys()) if key.startswith('u_')]
+
+    recipes = forum.get_recipes()
+    return render_template("index.html", recipes=recipes)
 
 
 @app.route("/register")
@@ -29,19 +29,15 @@ def create_user():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        session["password_not_matching"] = True
+        session["u_password_not_matching"] = True
         return redirect("/register")
-    else:
-        session["password_not_matching"] = False
     password_hash = generate_password_hash(password1)
 
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        forum.add_user(username, password_hash)
     except sqlite3.IntegrityError:
-        session["username_taken"] = True
+        session["u_username_taken"] = True
         return redirect("/register")
-    session["username_taken"] = False
     
     session["username"] = username
     return redirect("/")
@@ -56,19 +52,17 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])
+        password_hash = forum.get_password_hash(username)
         if password_hash == []:
-            session["user_not_found"] = True
+            session["u_user_not_found"] = True
             return redirect("/login")
-        session["user_not_found"] = False
         password_hash = password_hash[0][0]
 
         if check_password_hash(password_hash, password):
             session["username"] = username
             return redirect("/")
         else:
-            session["incorrect_password"] = True
+            session["u_incorrect_password"] = True
             return redirect("/login")
 
 @app.route("/logout")
@@ -84,10 +78,13 @@ def new_recipe():
 def create_recipe():
     title = request.form["title"]
     content = request.form["content"]
-    created_at = datetime.datetime.now()
-    sql = "SELECT id FROM users WHERE username = ?"
-    user_id = db.query(sql, [session["username"]])[0][0]
+    created_at = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+    user_id = forum.get_user_id(session["username"])
 
-    sql = "INSERT INTO recipes (title, content, created_at, user_id) VALUES (?, ?, ?, ?)"
-    db.execute(sql, [title, content, created_at, user_id])
-    return redirect("/")
+    recipe_id = forum.add_recipe(title, content, created_at, user_id)
+    return redirect("/recipe/" + str(recipe_id))
+
+@app.route("/recipe/<int:recipe_id>")
+def open_recipe(recipe_id):
+    recipe = forum.get_recipe(recipe_id)
+    return render_template("recipe.html", recipe=recipe)

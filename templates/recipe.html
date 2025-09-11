@@ -2,12 +2,12 @@
 <html>
 
 <head>
-  <title>Reseptit</title>
+  <title>{{ recipe.title }}</title>
 </head>
 
 <body>
   <h1>Reseptit</h1>
-  
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
@@ -15,24 +15,20 @@
   <p>
     <a href="/logout">Kirjaudu ulos</a>
   </p>
-  <a href="/new_recipe">Luo resepti</a>
   {% else %}
   <p>
     <a href="/login">Kirjaudu sisään</a>
     <a href="/register">Uusi käyttäjä</a>
   </p>
   {% endif %}
-
-  <br>
   <hr>
-  {% for recipe in recipes %}
-  <p>
-    <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
-    <br />
-    {{ recipe.username }} {{ recipe.created_at }}
-  </p>
-  <hr />
-  {% endfor %}
+
+  <h2>{{ recipe.title }}</h2>
+  <p>{{ recipe.created_at }}</p>
+  <br>
+  <p>{{ recipe.content }}</p>
+  
+  
   
 </body>
 
