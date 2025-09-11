@@ -25,7 +25,7 @@ def get_recipes():
     sql = """
         SELECT r.id, r.title, r.content, r.created_at, r.user_id, u.username 
         FROM recipes r
-          LEFT JOIN users u WHERE u.id = r.user_id
+          LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC
         """
     return db.query(sql)

@@ -3,8 +3,7 @@ import datetime
 from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
-import db
-import forum
+import queries
 import config
 
 app = Flask(__name__)
@@ -15,7 +14,7 @@ app.secret_key = config.secret_key
 def index():
     [session.pop(key) for key in list(session.keys()) if key.startswith('u_')]
 
-    recipes = forum.get_recipes()
+    recipes = queries.get_recipes()
     return render_template("index.html", recipes=recipes)
 
 
@@ -34,7 +33,7 @@ def create_user():
     password_hash = generate_password_hash(password1)
 
     try:
-        forum.add_user(username, password_hash)
+        queries.add_user(username, password_hash)
     except sqlite3.IntegrityError:
         session["u_username_taken"] = True
         return redirect("/register")
@@ -52,7 +51,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        password_hash = forum.get_password_hash(username)
+        password_hash = queries.get_password_hash(username)
         if password_hash == []:
             session["u_user_not_found"] = True
             return redirect("/login")
@@ -79,12 +78,12 @@ def create_recipe():
     title = request.form["title"]
     content = request.form["content"]
     created_at = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
-    user_id = forum.get_user_id(session["username"])
+    user_id = queries.get_user_id(session["username"])
 
-    recipe_id = forum.add_recipe(title, content, created_at, user_id)
+    recipe_id = queries.add_recipe(title, content, created_at, user_id)
     return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/recipe/<int:recipe_id>")
 def open_recipe(recipe_id):
-    recipe = forum.get_recipe(recipe_id)
+    recipe = queries.get_recipe(recipe_id)
     return render_template("recipe.html", recipe=recipe)
