@@ -12,11 +12,12 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    [session.pop(key) for key in list(session.keys()) if key.startswith('u_')]
+    for key in list(session.keys()):
+        if key.startswith("u_"):
+            session.pop(key)
 
     recipes = queries.get_recipes()
     return render_template("index.html", recipes=recipes)
-
 
 @app.route("/register")
 def register():
@@ -37,7 +38,7 @@ def create_user():
     except sqlite3.IntegrityError:
         session["u_username_taken"] = True
         return redirect("/register")
-    
+
     session["username"] = username
     return redirect("/")
 
