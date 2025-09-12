@@ -46,3 +46,21 @@ def update_recipe(recipe_id, title, content):
 def remove_recipe(recipe_id):
     sql = "DELETE FROM recipes WHERE id = ?"
     db.execute(sql, [recipe_id])
+
+def search(query):
+    sql = """SELECT r.id,
+                    r.title,
+                    r.content,
+                    r.created_at,
+                    u.username
+             FROM recipes r
+              LEFT JOIN users u ON r.user_id = u.id
+             WHERE r.title LIKE ? OR r.content LIKE ? OR u.username LIKE ?
+             ORDER BY
+              CASE
+               WHEN r.title LIKE ? THEN 0
+               ELSE 1
+              END,
+              r.created_at DESC"""
+    params = ["%" + query + "%"] * 4
+    return db.query(sql, params)

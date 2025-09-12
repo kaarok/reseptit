@@ -6,15 +6,14 @@
 </head>
 
 <body>
-  <h1>Reseptit</h1>
+  <h1>Reseptin haku</h1>
   
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
   </p>
   <p>
-    <a href="/logout">Kirjaudu ulos</a>
-    <a href="/new_recipe">Luo resepti</a>
+    <a href="/">Etusivulle</a> <a href="/logout">Kirjaudu ulos</a> <a href="/new_recipe">Luo resepti</a>
   </p>
   
   {% else %}
@@ -36,7 +35,7 @@
       <input type="submit" value="Hae" />
     </form>
   <hr>
-  {% for recipe in recipes %}
+  {% for recipe in results %}
   <p>
     <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
     <br />
