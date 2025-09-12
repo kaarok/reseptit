@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Reseptit</title>
+</head>
+
+<body>
+  <h1>Reseptit</h1>
+  <form action="/edit/{{ recipe.id }}" method="POST">
+    <p>
+      Reseptin nimi: <br />
+      <textarea name="title" rows="1" cols="30">{{ recipe.title }}</textarea>
+    </p>
+    <p>
+      Resepti: <br />
+      <textarea name="content" rows="5" cols="40">{{ recipe.content }}</textarea>
+    </p>
+    <input type="submit" value="Valmis" />
+  </form>
+  <br>
+  <form action="/recipe/{{ recipe.id }}" method="GET">
+    <input type="submit" value="Peruuta" />
+  </form>
+  <br>
+  <form action="/delete/{{ recipe.id }}" method="GET">
+    <input type="submit" value="Poista resepti">
+  </form>
+
+</html>

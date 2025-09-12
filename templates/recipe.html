@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>{{ recipe.title }}</title>
+  <title>Reseptit</title>
 </head>
 
 <body>
@@ -22,12 +22,14 @@
   </p>
   {% endif %}
   <hr>
-
+  {% if session.username == recipe.username %}
+  <a href="/edit/{{ recipe.id }}">Muokkaa</a>
+  {% endif %}
   <h2>{{ recipe.title }}</h2>
   <p>{{ recipe.created_at }}</p>
   <br>
   <p>{{ recipe.content }}</p>
-  
+  <p><i>{{recipe.username}}</i></p>
   
   
 </body>

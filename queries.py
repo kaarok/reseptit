@@ -31,5 +31,18 @@ def get_recipes():
     return db.query(sql)
 
 def get_recipe(id):
-    sql = "SELECT * FROM recipes WHERE id = ?"
+    sql = """
+        SELECT r.id, r.title, r.content, r.created_at, r.user_id, u.username 
+        FROM recipes r
+          LEFT JOIN users u ON u.id = r.user_id
+        WHERE r.id = ?
+        """
     return db.query(sql, [id])[0]
+
+def update_recipe(recipe_id, title, content):
+    sql = "UPDATE recipes SET content = ?, title = ? WHERE id = ?"
+    db.execute(sql, [content, title, recipe_id])
+
+def remove_recipe(recipe_id):
+    sql = "DELETE FROM recipes WHERE id = ?"
+    db.execute(sql, [recipe_id])

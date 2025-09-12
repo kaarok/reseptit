@@ -84,7 +84,30 @@ def create_recipe():
     recipe_id = queries.add_recipe(title, content, created_at, user_id)
     return redirect("/recipe/" + str(recipe_id))
 
-@app.route("/recipe/<int:recipe_id>")
+@app.route("/recipe/<int:recipe_id>", methods=["GET"])
 def open_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     return render_template("recipe.html", recipe=recipe)
+
+@app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
+def edit_recipe(recipe_id):
+    recipe = queries.get_recipe(recipe_id)
+    if request.method == "GET":
+        user_id = queries.get_user_id(session["username"])
+        return render_template("edit.html", recipe=recipe, user_id=user_id)
+
+    if request.method == "POST":
+        title = request.form["title"]
+        content = request.form["content"]
+        queries.update_recipe(recipe_id, title, content)
+        return redirect("/recipe/" + str(recipe["id"]))
+
+@app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
+def delete_recipe(recipe_id):
+    if request.method == "GET":
+        recipe = queries.get_recipe(recipe_id)
+        return render_template("delete_recipe.html", recipe=recipe)
+
+    if request.method == "POST":
+        queries.remove_recipe(recipe_id)
+        return redirect("/")
