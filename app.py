@@ -28,6 +28,11 @@ def create_user():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    
+    if len(username) == 0 or len(password1) == 0:
+            session["u_invalid_name_password"] = True
+            return redirect("/register")
+    
     if password1 != password2:
         session["u_password_not_matching"] = True
         return redirect("/register")
@@ -78,9 +83,8 @@ def new_recipe():
 def create_recipe():
     title = request.form["title"]
     content = request.form["content"]
-    created_at = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+    created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     user_id = queries.get_user_id(session["username"])
-
     recipe_id = queries.add_recipe(title, content, created_at, user_id)
     return redirect("/recipe/" + str(recipe_id))
 
