@@ -28,7 +28,7 @@ def create_user():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
-    
+
     if len(username) == 0 or len(password1) == 0:
             session["u_invalid_name_password"] = True
             return redirect("/register")
@@ -82,16 +82,20 @@ def new_recipe():
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
     title = request.form["title"]
-    content = request.form["content"]
+    ingredients = request.form["ingredients"]
+    steps = request.form["steps"]
     created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     user_id = queries.get_user_id(session["username"])
-    recipe_id = queries.add_recipe(title, content, created_at, user_id)
+    recipe_id = queries.add_recipe(title, ingredients, steps, created_at, user_id)
     return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
 def open_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
-    return render_template("recipe.html", recipe=recipe)
+    ingredients = queries.get_ingredients(recipe_id)
+    print(ingredients)
+    instructions = queries.get_instructions(recipe_id)
+    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):

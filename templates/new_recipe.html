@@ -8,12 +8,18 @@
 <body>
   <form action="/create_recipe" method="post">
     <p>
-      Reseptin nimi: <br />
+      Reseptin nimi:
       <input type="text" name="title" />
     </p>
     <p>
-      Resepti: <br />
-      <textarea name="content" rows="5" cols="40"></textarea>
+      Ainesosat:
+      (Kirjoita muodossa: "ainesosa määrä yksikkö, ". Esim. "jauho 3 dl, banaani 1 kpl")
+      <textarea name="ingredients" rows="5" cols="40"></textarea>
+    </p>
+    <p>
+      Ohjeet:
+      (Kirjoita muodossa: "Ensimmäinen ohje. /Toinen ohje.")
+      <textarea name="steps" rows="5" cols="40"></textarea>
     </p>
     <input type="submit" value="Julkaise" />
   </form>

@@ -28,7 +28,21 @@
   {% endif %}
   <h2>{{ recipe.title }}</h2>
   <br>
-  <p>{{ recipe.content }}</p>
+  <table>
+    {% for i in ingredients %}
+    <tr>
+      <td>{{i.name}}</td>
+      <td>{{i.amount}}</td>
+      <td>{{i.unit}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <ul>
+    {% for step in instructions %}
+    <li>{{step.step}}</li>
+    {% endfor %}
+  </ul>
+  
   <p><i>{{recipe.username}}</i></p>
   <p>{{ recipe.created_at }}</p>
 </body>
