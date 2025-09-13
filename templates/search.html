@@ -7,13 +7,15 @@
 
 <body>
   <h1>Reseptin haku</h1>
-  
+  <a href="/">Etusivulle</a>
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
   </p>
   <p>
-    <a href="/">Etusivulle</a> <a href="/logout">Kirjaudu ulos</a> <a href="/new_recipe">Luo resepti</a>
+    <a href="/logout">Kirjaudu ulos</a>
+    <a href="/new_recipe">Luo resepti</a>
   </p>
   
   {% else %}
