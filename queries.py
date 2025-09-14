@@ -16,30 +16,28 @@ def get_password_hash(username):
     sql = "SELECT password_hash FROM users WHERE username = ?"
     return db.query(sql, [username])
 
-def add_recipe(title, ingredients, steps, created_at, user_id):
+def add_recipe(title, ingredients, instructions, created_at, user_id):
     sql = "INSERT INTO recipes (title, created_at, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, created_at, user_id])
     recipe_id = db.last_insert_id()
 
-    ingredients = ingredients.split(", ")
-    position = 0
+    sql = "INSERT INTO ingredients (recipe_id, ingredient) VALUES (?, ?)"
     for i in ingredients:
-        i = i.split(" ")
-        sql = "INSERT INTO recipe_ingredients (recipe_id, name, amount, unit, position) VALUES (?, ?, ?, ?, ?)"
-        db.execute(sql, [recipe_id, i[0], i[1], i[2], position])
-        position += 1
+        if i != "":
+            db.execute(sql, [recipe_id, i])
     
-    steps = steps.split("/")
+    sql = "INSERT INTO instructions (recipe_id, step, position) VALUES (?, ?, ?)"
     position = 0
-    for s in steps:
-        sql = "INSERT INTO recipe_instructions (recipe_id, step, position) VALUES (?, ?, ?)"
-        db.execute(sql, [recipe_id, s, position])
+    for i in instructions:
+        if i != "":
+            db.execute(sql, [recipe_id, i, position])
+            position += 1
 
     return recipe_id
 
 def get_recipes():
     sql = """
-        SELECT r.id, r.title, r.content, r.created_at, r.user_id, u.username 
+        SELECT r.id, r.title, r.user_id, r.created_at, u.username
         FROM recipes r
           LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC
@@ -48,16 +46,37 @@ def get_recipes():
 
 def get_recipe(id):
     sql = """
-        SELECT r.id, r.title, r.content, r.created_at, r.user_id, u.username 
+        SELECT r.id, r.title, ing.ingredient, ins.step, r.created_at, r.user_id, u.username 
         FROM recipes r
           LEFT JOIN users u ON u.id = r.user_id
+          LEFT JOIN ingredients ing ON ing.recipe_id = r.id
+          LEFT JOIN instructions ins ON ins.recipe_id = r.id
         WHERE r.id = ?
         """
     return db.query(sql, [id])[0]
 
-def update_recipe(recipe_id, title, content):
-    sql = "UPDATE recipes SET content = ?, title = ? WHERE id = ?"
-    db.execute(sql, [content, title, recipe_id])
+def update_recipe(recipe_id, title, ingredients, instructions):
+    sql = "UPDATE recipes SET title = ? WHERE id = ?"
+    db.execute(sql, [title, recipe_id])
+
+    sql = "DELETE FROM ingredients WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+    sql = "DELETE FROM instructions WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+
+    sql = "INSERT INTO ingredients (recipe_id, ingredient) VALUES (?, ?)"
+    for i in ingredients:
+        if i != "":
+            db.execute(sql, [recipe_id, i])
+    
+    sql = "INSERT INTO instructions (recipe_id, step, position) VALUES (?, ?, ?)"
+    position = 0
+    for i in instructions:
+        if i != "":
+            db.execute(sql, [recipe_id, i, position])
+            position += 1
+
+    return recipe_id
 
 def remove_recipe(recipe_id):
     sql = "DELETE FROM recipes WHERE id = ?"
@@ -65,17 +84,17 @@ def remove_recipe(recipe_id):
 
 def get_ingredients(recipe_id):
     sql = """
-        SELECT i.name, i.amount, i.unit, i.position
-        FROM recipe_ingredients i
+        SELECT i.ingredient
+        FROM ingredients i
         WHERE i.recipe_id = ?
-        ORDER BY i.position"""
+        """
     return db.query(sql, [recipe_id])
     
 
 def get_instructions(recipe_id):
     sql = """
         SELECT i.step, i.position
-        FROM recipe_instructions i
+        FROM instructions i
         WHERE i.recipe_id = ?
         ORDER BY i.position"""
     return db.query(sql, [recipe_id])
@@ -83,17 +102,19 @@ def get_instructions(recipe_id):
 def search(query):
     sql = """SELECT r.id,
                     r.title,
-                    r.content,
                     r.created_at,
                     u.username
              FROM recipes r
               LEFT JOIN users u ON r.user_id = u.id
-             WHERE r.title LIKE ? OR r.content LIKE ? OR u.username LIKE ?
+              LEFT JOIN ingredients ing ON r.id = ing.recipe_id
+              LEFT JOIN instructions ins ON r.id = ins.recipe_id
+             WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
+             GROUP BY r.id
              ORDER BY
               CASE
                WHEN r.title LIKE ? THEN 0
                ELSE 1
               END,
               r.created_at DESC"""
-    params = ["%" + query + "%"] * 4
+    params = ["%" + query + "%"] * 5
     return db.query(sql, params)

@@ -31,15 +31,13 @@
   <table>
     {% for i in ingredients %}
     <tr>
-      <td>{{i.name}}</td>
-      <td>{{i.amount}}</td>
-      <td>{{i.unit}}</td>
+      <td>{{ i.ingredient }}</td>
     </tr>
     {% endfor %}
   </table>
   <ol>
-    {% for step in instructions %}
-    <li>{{step.step}}</li>
+    {% for i in instructions %}
+    <li>{{ i.step }}</li>
     {% endfor %}
   </ol>
   

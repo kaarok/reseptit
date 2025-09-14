@@ -7,22 +7,27 @@
 
 <body>
   <h1>Reseptit</h1>
-  <form action="/create_recipe" method="post">
+  <form action="/create_recipe" method="POST">
     <p>
       Reseptin nimi:
-      <input type="text" name="title" />
+      <input type="text" name="title" value="{{ title }}" />
     </p>
-    <p>
+    <ul>
       Ainesosat:
-      (Kirjoita muodossa: "ainesosa määrä yksikkö, ". Esim. "jauho 3 dl, banaani 1 kpl")
-      <textarea name="ingredients" rows="5" cols="40"></textarea>
-    </p>
-    <p>
+      {% for i in ingredients %}
+      <li><input type="text" name="ingredient" value="{{ i }}"></li>
+      {% endfor %}
+    </ul>
+    <button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button>
+    <ol>
       Ohjeet:
-      (Kirjoita muodossa: "Ensimmäinen ohje. /Toinen ohje.")
-      <textarea name="steps" rows="5" cols="40"></textarea>
-    </p>
-    <input type="submit" value="Julkaise" />
+      {% for i in instructions %}
+      <li><input type="text" name="instruction" value="{{ i }}"></li>
+      {% endfor %}
+    </ol>
+    <button type="submit" name="action" value="instructions_add_row">Uusi ohje</button>
+    <br><br>
+    <button type="submit" name="action" value="publish">Julkaise</button>
   </form>
   <br>
   <form action="/" method="GET">

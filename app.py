@@ -1,7 +1,6 @@
 import sqlite3
 import datetime
-from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import queries
 import config
@@ -77,23 +76,34 @@ def logout():
 
 @app.route("/new_recipe")
 def new_recipe():
-    return render_template("new_recipe.html")
+    ingredients = [""]
+    instructions = [""]
+    return render_template("new_recipe.html", ingredients=ingredients, instructions=instructions)
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
-    title = request.form["title"]
-    ingredients = request.form["ingredients"]
-    steps = request.form["steps"]
-    created_at = datetime.datetime.now().strftime("%d.%m.%Y")
-    user_id = queries.get_user_id(session["username"])
-    recipe_id = queries.add_recipe(title, ingredients, steps, created_at, user_id)
-    return redirect("/recipe/" + str(recipe_id))
+    title = request.form.get("title")
+    ingredients = request.form.getlist("ingredient")
+    instructions = request.form.getlist("instruction")
+
+    if request.form.get("action") == "ingredients_add_row":
+        ingredients.append("")
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions)
+    
+    if request.form.get("action") == "instructions_add_row":
+        instructions.append("")
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions)
+    
+    if request.form.get("action") == "publish":
+        created_at = datetime.datetime.now().strftime("%d.%m.%Y")
+        user_id = queries.get_user_id(session["username"])
+        recipe_id = queries.add_recipe(title, ingredients, instructions, created_at, user_id)
+        return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
 def open_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     ingredients = queries.get_ingredients(recipe_id)
-    print(ingredients)
     instructions = queries.get_instructions(recipe_id)
     return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions)
 
@@ -101,14 +111,26 @@ def open_recipe(recipe_id):
 def edit_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     if request.method == "GET":
-        user_id = queries.get_user_id(session["username"])
-        return render_template("edit.html", recipe=recipe, user_id=user_id)
+        title = recipe["title"] if recipe else ""
+        ingredients = [r["ingredient"] for r in queries.get_ingredients(recipe_id)]
+        instructions = [r["step"] for r in queries.get_instructions(recipe_id)]
+        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
 
-    if request.method == "POST":
-        title = request.form["title"]
-        content = request.form["content"]
-        queries.update_recipe(recipe_id, title, content)
-        return redirect("/recipe/" + str(recipe["id"]))
+    title = request.form.get("title")
+    ingredients = request.form.getlist("ingredient")
+    instructions = request.form.getlist("instruction")
+
+    if request.form.get("action") == "ingredients_add_row":
+        ingredients.append("")
+        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+    
+    if request.form.get("action") == "instructions_add_row":
+        instructions.append("")
+        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+    
+    if request.form.get("action") == "publish":
+        recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions)
+        return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id):
