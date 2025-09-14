@@ -37,11 +37,11 @@
     </tr>
     {% endfor %}
   </table>
-  <ul>
+  <ol>
     {% for step in instructions %}
     <li>{{step.step}}</li>
     {% endfor %}
-  </ul>
+  </ol>
   
   <p><i>{{recipe.username}}</i></p>
   <p>{{ recipe.created_at }}</p>
