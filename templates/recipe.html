@@ -40,9 +40,33 @@
     <li>{{ i.step }}</li>
     {% endfor %}
   </ol>
-  
+  <br>
   <p><i>{{recipe.username}}</i></p>
   <p>{{ recipe.created_at }}</p>
+  <br><hr>
+  {% if session.username %}
+  <form action="/create_review/{{ recipe.id }}" method="POST">
+    <p>
+      <label for="rating">Arvosana:</label>
+      <input type="number" id="rating" name="rating" min="1" max="5">
+       / 5
+    </p>
+    <br>
+    <textarea name="comment" id="comment"></textarea>
+    <input type="submit" value="Lähetä">
+  </form>
+  <hr>
+  {% endif %}
+  <br> 
+  <h3>Arvostelut</h3>
+  {% for r in reviews %}
+    {% if r.rating %}
+    <p>{{r .rating }} / 5</p>
+    {% endif %}
+    <p>{{ r.comment }}</p>
+    <p>{{ r.username }} {{ r.created_at }}</p>
+  <hr />
+  {% endfor %}
 </body>
 
 </html>

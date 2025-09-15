@@ -99,6 +99,21 @@ def get_instructions(recipe_id):
         ORDER BY i.position"""
     return db.query(sql, [recipe_id])
 
+def add_review(recipe_id, user_id, rating, comment, created_at):
+    if rating == None and comment == None:
+        return None
+    sql = "INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)"
+    db.execute(sql, [recipe_id, user_id, rating, comment, created_at])
+
+def get_reviews(recipe_id):
+    sql = """SELECT r.id, r.rating, r.comment, r.created_at, u.username
+             FROM reviews r
+               LEFT JOIN users u ON u.id = r.user_id
+             WHERE r.recipe_id = ?
+             ORDER BY r.created_at DESC
+            """
+    return db.query(sql, [recipe_id])
+
 def search(query):
     sql = """SELECT r.id,
                     r.title,

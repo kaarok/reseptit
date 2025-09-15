@@ -105,7 +105,8 @@ def open_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
-    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions)
+    reviews = queries.get_reviews(recipe_id)
+    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, reviews=reviews)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
@@ -141,6 +142,15 @@ def delete_recipe(recipe_id):
     if request.method == "POST":
         queries.remove_recipe(recipe_id)
         return redirect("/")
+    
+@app.route("/create_review/<int:recipe_id>", methods=["POST"])
+def create_review(recipe_id):
+    rating = request.form["rating"]
+    comment = request.form["comment"]
+    user_id =   queries.get_user_id(session["username"])
+    created_at = datetime.datetime.now().strftime("%d.%m.%Y")
+    queries.add_review(recipe_id, user_id, rating, comment, created_at)
+    return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/search")
 def search():

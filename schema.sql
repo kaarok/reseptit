@@ -6,9 +6,9 @@ CREATE TABLE users (
 
 CREATE TABLE recipes (
     id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
     title TEXT,
-    created_at TEXT,
-    user_id INTEGER REFERENCES users(id)
+    created_at TEXT
 );
 
 CREATE TABLE ingredients (
@@ -22,4 +22,13 @@ CREATE TABLE instructions (
     recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
     step TEXT,
     position INTEGER
+);
+
+CREATE TABLE reviews (
+    id INTEGER PRIMARY KEY,
+    recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id),
+    rating INTEGER,
+    comment TEXT,
+    created_at
 );
