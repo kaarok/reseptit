@@ -21,6 +21,8 @@ def index():
 @app.route("/search")
 def search():
     query = request.args.get("query")
+    if query == "":
+        return redirect("/")
     results = queries.search(query) if query else []
     return render_template("index.html", query=query, results=results)
 

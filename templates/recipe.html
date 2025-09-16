@@ -13,16 +13,19 @@
     <p>
       Olet kirjautunut nimellä {{ session.username }}
     </p>
-    <p>
-      <a href="/logout">Kirjaudu ulos</a>
-      <a href="/new_recipe">Luo resepti</a>
-    </p>
-    
+    <form action="/logout">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+    <form action="/new_recipe">
+      <button type="submit">Luo resepti</button>
+    </form>
     {% else %}
-    <p>
-      <a href="/login">Kirjaudu sisään</a>
-      <a href="/register">Uusi käyttäjä</a>
-    </p>
+    <form action="/register">
+      <button type="submit">Uusi käyttäjä</button>
+    </form>
+    <form action="/login">
+      <button type="submit">Kirjaudu sisään</button>
+    </form>
     {% endif %}
     <form action="/search" method="GET">
       {% if query %}
