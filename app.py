@@ -15,8 +15,14 @@ def index():
         if key.startswith("u_"):
             session.pop(key)
 
-    recipes = queries.get_recipes()
-    return render_template("index.html", recipes=recipes)
+    results = queries.get_recipes()
+    return render_template("index.html", results=results)
+
+@app.route("/search")
+def search():
+    query = request.args.get("query")
+    results = queries.search(query) if query else []
+    return render_template("index.html", query=query, results=results)
 
 @app.route("/register")
 def register():
@@ -152,8 +158,4 @@ def create_review(recipe_id):
     queries.add_review(recipe_id, user_id, rating, comment, created_at)
     return redirect("/recipe/" + str(recipe_id))
 
-@app.route("/search")
-def search():
-    query = request.args.get("query")
-    results = queries.search(query) if query else []
-    return render_template("search.html", query=query, results=results)
+

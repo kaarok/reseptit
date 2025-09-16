@@ -3,30 +3,41 @@
 
 <head>
   <title>Kirjautuminen</title>
+  <link rel="stylesheet" href="/static/main.css">
 </head>
 
 <body>
-  <form action="/login" method="post">
-    <p>
-      Tunnus: <br />
-      <input type="text" name="username" autofocus />
-    </p>
-    <p>
-      Salasana: <br />
-      <input type="password" name="password" />
-    </p>
-    <input type="submit" value="Kirjaudu" />
-  </form>
-  {% if session.u_incorrect_password %}
-  <p>
-    VIRHE: väärä salasana
-  </p>
-  {% endif %}
-  {% if session.u_user_not_found %}
-  <p>
-    VIRHE: käyttäjää ei löydetty
-  </p>
-  {% endif %}
+  <div class="header">
+    <h1><a href="/">Reseptit</a></h1>
+  </div>
+  <div class="content">
+    <div class="header">
+      Kirjaudu sisään
+    </div>
+    <div class="item">
+      <form action="/login" method="post">
+        <p>
+          Tunnus: <br />
+          <input type="text" name="username" autofocus class="textbox"/>
+        </p>
+        <p>
+          Salasana: <br />
+          <input type="password" name="password" class="textbox"/>
+        </p>
+        <button type="submit">Kirjaudu</button>
+      </form>
+      {% if session.u_incorrect_password %}
+      <p>
+        VIRHE: väärä salasana
+      </p>
+      {% endif %}
+      {% if session.u_user_not_found %}
+      <p>
+        VIRHE: käyttäjää ei löydetty
+      </p>
+      {% endif %}
+    </div>
+  </div>
 </body>
 
 </html>

@@ -1,0 +1,74 @@
+:root {
+    --white: #E6EBE0;
+    --black: #614051;
+    --red: #DA4167;
+    --light_blue: #9BC1BC;
+    --blue: #006992;
+
+    background-color: var(--light_blue);
+    color: var(--black);
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: underline;
+    color: currentColor;
+}
+
+.header {
+    background-color: var(--blue);
+    color: var(--white);
+
+    padding: 1em;
+    margin: 1em;
+
+    border-radius: 12px;
+}
+
+button {
+    background-color: var(--red);
+    color: var(--white);
+    text-decoration: solid;
+
+    padding: 1em;
+
+    border-width: 0;
+    border-radius: 12px;
+}
+
+.textbox {
+    background-color: var(--white);
+    color: var(--black);
+
+    padding: 0.5em;
+
+    border-width: 5px;
+    border-color: var(--red);
+    border-radius: 12px;
+    border-style: solid;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+.content {
+    margin: 1em;
+}
+
+.item {
+    background-color: var(--white);
+    color: var(--black);
+
+    padding: 1em;
+    margin: 1em;
+
+    border-radius: 12px;
+}
