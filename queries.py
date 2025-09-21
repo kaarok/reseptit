@@ -35,7 +35,17 @@ def add_recipe(title, ingredients, instructions, created_at, user_id):
 
     return recipe_id
 
-def get_recipes():
+def get_recipes(user_id=None):
+    if user_id:
+        sql = """
+        SELECT r.id, r.title, r.user_id, r.created_at, u.username
+        FROM recipes r
+          LEFT JOIN users u ON u.id = r.user_id
+        WHERE r.user_id = ?
+        ORDER BY r.created_at DESC
+        """
+        return db.query(sql, [user_id])
+    
     sql = """
         SELECT r.id, r.title, r.user_id, r.created_at, u.username
         FROM recipes r

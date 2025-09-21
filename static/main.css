@@ -37,7 +37,8 @@ button {
     color: var(--white);
     text-decoration: solid;
 
-    padding: 1em;
+    padding: 0.5em;
+    margin: 0.5em;
 
     border-width: 0;
     border-radius: 12px;

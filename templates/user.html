@@ -38,58 +38,18 @@
   </div>
   <div class="content">
     <div class="header">
-      <h3>{{ recipe.title }}</h3>
-      {% if session.username == recipe.username %}
-      <form action="/edit/{{ recipe.id }}">
-        <button type="submit">Muokkaa</button>
-      </form>
-      {% endif %}
+        <h2>{{ user_recipes[0].username }}</h2>
     </div>
+    {% for r in user_recipes %}
     <div class="item">
-      <table>
-        {% for i in ingredients %}
-        <tr>
-          <td>{{ i.ingredient }}</td>
-        </tr>
-        {% endfor %}
-      </table>
-      <ol>
-        {% for i in instructions %}
-        <li>{{ i.step }}</li>
-        {% endfor %}
-      </ol>
-      <br>
-      <p><i>{{recipe.username}}</i></p>
-      <p>{{ recipe.created_at }}</p>
-    </div>
-    
-    <div class="header">
-      <h3>Arvostelut</h3>
-      {% if session.username %}
-      <form action="/create_review/{{ recipe.id }}" method="POST">
-        <p>
-          <label for="rating">Arvosana:</label>
-          <input type="number" id="rating" name="rating" min="1" max="5" class="textbox">
-          / 5
-        </p>
-        <br>
-        <textarea name="comment" id="comment" class="textbox"></textarea>
-        <button type="submit" value="Lähetä">Valmis</button>
-      </form>
-      {% endif %}
-    </div>
-    {% for r in reviews %}
-    <div class="item">
-      {% if r.rating %}
-      <p>{{r .rating }} / 5</p>
-      {% endif %}
-      <p>{{ r.comment }}</p>
+      <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
       <p>
         <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
       </p>
     </div>
     {% endfor %}
   </div>
+
 </body>
 
 </html>

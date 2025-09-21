@@ -52,6 +52,7 @@ def create_user():
         return redirect("/register")
 
     session["username"] = username
+    session["user_id"] = queries.get_user_id(username)
     return redirect("/")
 
 
@@ -72,6 +73,7 @@ def login():
 
         if check_password_hash(password_hash, password):
             session["username"] = username
+            session["user_id"] = queries.get_user_id(username)
             return redirect("/")
         else:
             session["u_incorrect_password"] = True
@@ -109,12 +111,17 @@ def create_recipe():
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
-def open_recipe(recipe_id):
+def show_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
     reviews = queries.get_reviews(recipe_id)
     return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, reviews=reviews)
+
+@app.route("/user/<int:user_id>", methods=["GET"])
+def show_user(user_id):
+    recipes = queries.get_recipes(user_id)
+    return render_template("user.html", user_recipes=recipes)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
@@ -159,5 +166,4 @@ def create_review(recipe_id):
     created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     queries.add_review(recipe_id, user_id, rating, comment, created_at)
     return redirect("/recipe/" + str(recipe_id))
-
 
