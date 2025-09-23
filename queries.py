@@ -116,30 +116,32 @@ def add_review(recipe_id, user_id, rating, comment, created_at):
     db.execute(sql, [recipe_id, user_id, rating, comment, created_at])
 
 def get_reviews(recipe_id):
-    sql = """SELECT r.id, r.rating, r.comment, r.created_at, u.username
-             FROM reviews r
-               LEFT JOIN users u ON u.id = r.user_id
-             WHERE r.recipe_id = ?
-             ORDER BY r.created_at DESC
-            """
+    sql = """
+        SELECT r.id, r.rating, r.comment, r.created_at, u.username
+        FROM reviews r
+        LEFT JOIN users u ON u.id = r.user_id
+        WHERE r.recipe_id = ?
+        ORDER BY r.created_at DESC
+        """
     return db.query(sql, [recipe_id])
 
 def search(query):
-    sql = """SELECT r.id,
-                    r.title,
-                    r.created_at,
-                    u.username
-             FROM recipes r
-              LEFT JOIN users u ON r.user_id = u.id
-              LEFT JOIN ingredients ing ON r.id = ing.recipe_id
-              LEFT JOIN instructions ins ON r.id = ins.recipe_id
-             WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
-             GROUP BY r.id
-             ORDER BY
-              CASE
-               WHEN r.title LIKE ? THEN 0
-               ELSE 1
-              END,
-              r.created_at DESC"""
+    sql = """
+        SELECT r.id,
+            r.title,
+            r.created_at,
+            u.username
+        FROM recipes r
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN ingredients ing ON r.id = ing.recipe_id
+        LEFT JOIN instructions ins ON r.id = ins.recipe_id
+        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
+        GROUP BY r.id
+        ORDER BY
+        CASE
+        WHEN r.title LIKE ? THEN 0
+        ELSE 1
+        END,
+        r.created_at DESC"""
     params = ["%" + query + "%"] * 5
     return db.query(sql, params)

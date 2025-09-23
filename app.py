@@ -1,6 +1,6 @@
 import sqlite3
 import datetime
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import queries
 import config
@@ -71,13 +71,14 @@ def login():
             return redirect("/login")
         password_hash = password_hash[0][0]
 
-        if check_password_hash(password_hash, password):
-            session["username"] = username
-            session["user_id"] = queries.get_user_id(username)
-            return redirect("/")
-        else:
+        if not check_password_hash(password_hash, password):
             session["u_incorrect_password"] = True
             return redirect("/login")
+        
+        session["username"] = username
+        session["user_id"] = queries.get_user_id(username)
+        return redirect("/")
+            
 
 @app.route("/logout")
 def logout():
@@ -166,4 +167,3 @@ def create_review(recipe_id):
     created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     queries.add_review(recipe_id, user_id, rating, comment, created_at)
     return redirect("/recipe/" + str(recipe_id))
-
