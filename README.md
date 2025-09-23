@@ -17,7 +17,7 @@ Asenna 'flask'-kirjasto:
 $ pip install flask
 ```
 
-Luo tiedosto 'reseptit/database.db'. Ja lisää sinne kuuluvat taulut:
+Luo tiedosto `reseptit/database.db`. Ja lisää sinne kuuluvat taulut:
 ```
 $ sqlite3 database.db < schema.sql
 ```
