@@ -11,9 +11,18 @@
 - Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan. Reseptistä näytetään kommentit ja keskimääräinen arvosana.
 
 
-Testaus:
-- Kun olet kloonannut tiedostot koneellesi, tarvitset uuden tiedoston /reseptit/database.db
-- Seuraavaksi on tarkoitus saada schema.sql-tiedostossa olevat taulut tietokantaan:
-    - Voit kopioida taulut ja syöttää ne database.db tiedostoon sqlite3:n avulla.
-    - Voit myös käyttää komentoa:
-        $ sqlite3 database.db < schema.sql
+## Testaus
+Asenna 'flask'-kirjasto:
+```
+$ pip install flask
+```
+
+Luo tiedosto 'reseptit/database.db'. Ja lisää sinne kuuluvat taulut:
+```
+$ sqlite3 database.db < schema.sql
+```
+
+Käynnistä sovellus:
+```
+$ flask run
+```
