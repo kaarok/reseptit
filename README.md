@@ -1,19 +1,37 @@
 # Reseptit
 
-
+## Ominaisuudet
 - Sovelluksessa käyttäjät pystyvät jakamaan ruokareseptejään. Reseptissä lukee tarvittavat ainekset ja valmistusohje.
 - Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
 - Käyttäjä pystyy lisäämään reseptejä, muokkaamaan ja poistamaan niitä.
 - Käyttäjä näkee sovellukseen lisätyt reseptit.
 - Käyttäjä pystyy etsimään reseptejä hakusanalla.
-- Käyttäjäsivu näyttää, montako reseptiä käyttäjä on lisännyt ja listan käyttäjän lisäämistä resepteistä.
+- Käyttäjäsivu näyttää listan käyttäjän lisäämistä resepteistä.
+- Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan.
+- Reseptistä näytetään kommentit.
+
+### Tulossa
+- Reseptistä näytetään keskimääräinen arvosana.
+- Käyttäjäsivu näyttää, montako reseptiä käyttäjä on lisännyt.
 - Käyttäjä pystyy valitsemaan reseptille yhden tai useamman luokittelun (esim. alkuruoka, intialainen, vegaaninen).
-- Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan. Reseptistä näytetään kommentit ja keskimääräinen arvosana.
+- Käyttäjä pystyy lisäämään reseptille kuvan.
+- Ulkonäkö muutoksia:
+  - Fontit suuremmiksi monessa kohtaa.
+  - Eri sivuille omat otsikot.
+  - Painikkeet selkeämmiksi.
 
+## Testaus
+Asenna 'flask'-kirjasto:
+```
+$ pip install flask
+```
 
-Testaus:
-- Kun olet kloonannut tiedostot koneellesi, tarvitset uuden tiedoston /reseptit/database.db
-- Seuraavaksi on tarkoitus saada schema.sql-tiedostossa olevat taulut tietokantaan:
-    - Voit kopioida taulut ja syöttää ne database.db tiedostoon sqlite3:n avulla.
-    - Voit myös käyttää komentoa:
-        $ sqlite3 database.db < schema.sql
+Luo tiedosto `reseptit/database.db`. Ja lisää sinne kuuluvat taulut:
+```
+$ sqlite3 database.db < schema.sql
+```
+
+Käynnistä sovellus:
+```
+$ flask run
+```
