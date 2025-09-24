@@ -6,19 +6,20 @@
 - Käyttäjä pystyy lisäämään reseptejä, muokkaamaan ja poistamaan niitä.
 - Käyttäjä näkee sovellukseen lisätyt reseptit.
 - Käyttäjä pystyy etsimään reseptejä hakusanalla.
-- Käyttäjäsivu näyttää listan käyttäjän lisäämistä resepteistä.
-- Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan.
-- Reseptistä näytetään kommentit.
+- Käyttäjä pystyy antamaan reseptille arvostelun, jossa on kommentti ja arvosana.
+- Reseptistä näytetään arvostelut.
+- Käyttäjäsivu näyttää, listan käyttäjän lisäämistä resepteistä ja montako reseptiä ja arvostelua käyttäjä on lisännyt.
 
 ### Tulossa
 - Reseptistä näytetään keskimääräinen arvosana.
-- Käyttäjäsivu näyttää, montako reseptiä käyttäjä on lisännyt.
 - Käyttäjä pystyy valitsemaan reseptille yhden tai useamman luokittelun (esim. alkuruoka, intialainen, vegaaninen).
 - Käyttäjä pystyy lisäämään reseptille kuvan.
-- Ulkonäkö muutoksia:
+- Ulkonäkö/käytettävyys muutoksia:
   - Fontit suuremmiksi monessa kohtaa.
   - Eri sivuille omat otsikot.
-  - Painikkeet selkeämmiksi.
+  - Painikkeet selkeämmiksi. (Erottelua tärkeyden mukaan, luettavammat värit/fontit)
+  - Käyttäjälle parempi palaute arvostelun lähetyksestä.
+
 
 ## Testaus
 Asenna 'flask'-kirjasto:
