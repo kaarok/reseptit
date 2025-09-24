@@ -165,7 +165,10 @@ def delete_recipe(recipe_id):
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
 def create_review(recipe_id):
     rating = request.form["rating"]
-    comment = request.form["comment"]
+    comment = request.form["comment"].strip()
+    if rating == "" and comment == "":
+        return redirect("/recipe/" + str(recipe_id))
+    
     user_id =   queries.get_user_id(session["username"])
     created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     queries.add_review(recipe_id, user_id, rating, comment, created_at)
