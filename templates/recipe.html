@@ -1,95 +1,60 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Reseptit</title>
-  <link rel="stylesheet" href="/static/main.css">
-</head>
+{% block title %}Keskustelu{% endblock %}
 
-<body>
-  <div class="header">
-    <h1><a href="/">Reseptit</a></h1>
-    {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    </p>
-    <form action="/logout">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    <form action="/new_recipe">
-      <button type="submit">Uusi resepti</button>
-    </form>
-    {% else %}
-    <form action="/register">
-      <button type="submit">Uusi käyttäjä</button>
-    </form>
-    <form action="/login">
-      <button type="submit">Kirjaudu sisään</button>
-    </form>
-    {% endif %}
-    <form action="/search" method="GET">
-      {% if query %}
-      <input type="text" name="query" value="{{ query }}" class="textbox" />
-      {% else %}
-      <input type="text" name="query" class="textbox"/>
-      {% endif %}
-      <button type="submit" name="action" value="search">Hae</button>
-    </form>
-  </div>
-  <div class="content">
-    <div class="header">
-      <h3>{{ recipe.title }}</h3>
-      {% if session.username == recipe.username %}
-      <form action="/edit/{{ recipe.id }}">
-        <button type="submit">Muokkaa</button>
-      </form>
-      {% endif %}
-    </div>
-    <div class="item">
-      <table>
-        {% for i in ingredients %}
-        <tr>
-          <td>{{ i.ingredient }}</td>
-        </tr>
-        {% endfor %}
-      </table>
-      <ol>
-        {% for i in instructions %}
-        <li>{{ i.step }}</li>
-        {% endfor %}
-      </ol>
-      <br>
-      <p><i>{{recipe.username}}</i></p>
-      <p>{{ recipe.created_at }}</p>
-    </div>
-    
-    <div class="header">
-      <h3>Arvostelut</h3>
-      {% if session.username %}
-      <form action="/create_review/{{ recipe.id }}" method="POST">
-        <p>
-          <label for="rating">Arvosana:</label>
-          <input type="number" id="rating" name="rating" min="1" max="5" class="textbox">
-          / 5
-        </p>
-        <br>
-        <textarea name="comment" id="comment" class="textbox"></textarea>
-        <button type="submit" value="Lähetä">Valmis</button>
-      </form>
-      {% endif %}
-    </div>
-    {% for r in reviews %}
-    <div class="item">
-      {% if r.rating %}
-      <p>{{r .rating }} / 5</p>
-      {% endif %}
-      <p>{{ r.comment }}</p>
-      <p>
-        <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
-      </p>
-    </div>
+{% block content %}
+<div class="header">
+  <h3>{{ recipe.title }}</h3>
+  {% if session.username == recipe.username %}
+  <form action="/edit/{{ recipe.id }}">
+    <button type="submit">Muokkaa</button>
+  </form>
+  {% endif %}
+</div>
+<div class="item">
+  <table>
+    {% for i in ingredients %}
+    <tr>
+      <td>{{ i.ingredient }}</td>
+    </tr>
     {% endfor %}
-  </div>
-</body>
+  </table>
+  <ol>
+    {% for i in instructions %}
+    <li>{{ i.step }}</li>
+    {% endfor %}
+  </ol>
+  <br>
+  <p><i>{{recipe.username}}</i></p>
+  <p>{{ recipe.created_at }}</p>
+</div>
 
-</html>
+<div class="header">
+  <h3>Arvostelut</h3>
+  {% if session.username %}
+  <form action="/create_review/{{ recipe.id }}" method="POST">
+    <p>
+      <label for="rating">Arvosana:</label>
+      <input type="number" id="rating" name="rating" min="1" max="5" class="textbox">
+      / 5
+    </p>
+    <br>
+    <textarea name="comment" id="comment" class="textbox"></textarea>
+    <button type="submit" value="Lähetä">Valmis</button>
+  </form>
+  {% endif %}
+</div>
+{% for r in reviews %}
+<div class="item">
+  {% if r.rating %}
+  <p>{{r .rating }} / 5</p>
+  {% endif %}
+  <p>{{ r.comment }}</p>
+  <p>
+    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
+  </p>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}

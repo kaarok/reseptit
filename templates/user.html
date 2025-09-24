@@ -1,57 +1,20 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Reseptit</title>
-  <link rel="stylesheet" href="/static/main.css">
-</head>
+{% block title %}Keskustelu{% endblock %}
 
-<body>
-  <div class="header">
-    <h1><a href="/">Reseptit</a></h1>
-    {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    </p>
-    <form action="/logout">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    <form action="/new_recipe">
-      <button type="submit">Uusi resepti</button>
-    </form>
-    {% else %}
-    <form action="/register">
-      <button type="submit">Uusi käyttäjä</button>
-    </form>
-    <form action="/login">
-      <button type="submit">Kirjaudu sisään</button>
-    </form>
-    {% endif %}
-    <form action="/search" method="GET">
-      {% if query %}
-      <input type="text" name="query" value="{{ query }}" class="textbox" />
-      {% else %}
-      <input type="text" name="query" class="textbox"/>
-      {% endif %}
-      <button type="submit" name="action" value="search">Hae</button>
-    </form>
-  </div>
-  <div class="content">
-    <div class="header">
-        <h2>{{ username }}</h2>
-        <p>{{ activity.recipe_count }} reseptiä</p>
-        <p>{{ activity.review_count }} arvostelua</p>
-    </div>
-    {% for r in user_recipes %}
-    <div class="item">
-      <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
-      <p>
-        <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
-      </p>
-    </div>
-    {% endfor %}
-  </div>
-
-</body>
-
-</html>
+{% block content %}
+<div class="header">
+    <h2>{{ username }}</h2>
+    <p>{{ activity.recipe_count }} reseptiä</p>
+    <p>{{ activity.review_count }} arvostelua</p>
+</div>
+{% for r in user_recipes %}
+<div class="item">
+  <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
+  <p>
+    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
+  </p>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
