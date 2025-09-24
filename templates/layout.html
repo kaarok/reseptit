@@ -9,32 +9,35 @@
 <body>
   <div class="header">
     <h1><a href="/">Reseptit</a></h1>
-    {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    </p>
-    <form action="/logout">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    <form action="/new_recipe">
-      <button type="submit">Uusi resepti</button>
-    </form>
-    {% else %}
-    <form action="/register">
-      <button type="submit">Uusi käyttäjä</button>
-    </form>
-    <form action="/login">
-      <button type="submit">Kirjaudu sisään</button>
-    </form>
-    {% endif %}
-    <form action="/search" method="GET">
-      {% if query %}
-      <input type="text" name="query" value="{{ query }}" class="textbox" />
+    <div class="nav">
+      {% if session.username %}
+      <p>
+        Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+      </p>
+      </br>
+      <form action="/logout">
+        <button action="/logout"type="submit">Kirjaudu ulos</button>
+      </form>
+      <form action="/new_recipe">
+        <button type="submit">Uusi resepti</button>
+      </form>
       {% else %}
-      <input type="text" name="query" class="textbox"/>
+      <form action="/register">
+        <button type="submit">Uusi käyttäjä</button>
+      </form>
+      <form action="/login">
+        <button type="submit">Kirjaudu sisään</button>
+      </form>
       {% endif %}
-      <button type="submit" name="action" value="search">Hae</button>
-    </form>
+      <form action="/search" method="GET">
+        {% if query %}
+        <input type="text" name="query" value="{{ query }}" class="textbox" />
+        {% else %}
+        <input type="text" name="query" class="textbox"/>
+        {% endif %}
+        <button type="submit" name="action" value="search">Hae</button>
+      </form>
+    </div>
   </div>
 
   <div class="content">
