@@ -39,6 +39,8 @@
   <div class="content">
     <div class="header">
         <h2>{{ username }}</h2>
+        <p>{{ activity.recipe_count }} reseptiä</p>
+        <p>{{ activity.review_count }} arvostelua</p>
     </div>
     {% for r in user_recipes %}
     <div class="item">

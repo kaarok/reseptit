@@ -121,9 +121,11 @@ def show_recipe(recipe_id):
 
 @app.route("/user/<int:user_id>", methods=["GET"])
 def show_user(user_id):
-    recipes = queries.get_recipes(user_id)
     username = queries.get_username(user_id)
-    return render_template("user.html", user_recipes=recipes, username=username)
+    recipes = queries.get_recipes(user_id)
+    reviews = queries.get_user_reviews(user_id)
+    activity = {"recipe_count": len(recipes), "review_count": len(reviews)}
+    return render_template("user.html", username=username, user_recipes=recipes, user_reviews=reviews, activity=activity)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):

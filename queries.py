@@ -125,6 +125,16 @@ def get_reviews(recipe_id):
         """
     return db.query(sql, [recipe_id])
 
+def get_user_reviews(user_id):
+    sql = """
+        SELECT r.id, r.rating, r.comment, r.created_at, u.username
+        FROM reviews r
+        LEFT JOIN users u ON u.id = r.user_id
+        WHERE r.user_id = ?
+        ORDER BY r.created_at DESC
+        """
+    return db.query(sql, [user_id])
+
 def search(query):
     sql = """
         SELECT r.id,
