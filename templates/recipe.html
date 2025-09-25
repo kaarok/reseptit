@@ -31,30 +31,33 @@
 
 <div class="header">
   <h3>Arvostelut</h3>
+</div>
+<div class="content">
   {% if session.username %}
-  <form action="/create_review/{{ recipe.id }}" method="POST">
+  <div class="item">
+    <form action="/create_review/{{ recipe.id }}" method="POST">
+      <p>
+        <label for="rating">Arvosana:</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" class="textbox">
+        / 5
+      </p>
+      <br>
+      <textarea name="comment" id="comment" class="textbox" rows="7" cols="70"></textarea>
+      <br>
+      <button type="submit" value="Lähetä">Lähetä</button>
+    </form>
+  </div>
+  {% endif %}
+  {% for r in reviews %}
+  <div class="item">
+    {% if r.rating %}
+    <p>{{r .rating }} / 5</p>
+    {% endif %}
+    <p>{{ r.comment }}</p>
     <p>
-      <label for="rating">Arvosana:</label>
-      <input type="number" id="rating" name="rating" min="1" max="5" class="textbox">
-      / 5
+      <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
     </p>
-    <br>
-    <textarea name="comment" id="comment" class="textbox"></textarea>
-    <button type="submit" value="Lähetä">Valmis</button>
-  </form>
-  {% endif %}
+  </div>
+  {% endfor %}
 </div>
-{% for r in reviews %}
-<div class="item">
-  {% if r.rating %}
-  <p>{{r .rating }} / 5</p>
-  {% endif %}
-  <p>{{ r.comment }}</p>
-  <p>
-    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
-  </p>
-</div>
-{% endfor %}
-</div>
-
 {% endblock %}
