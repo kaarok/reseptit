@@ -5,6 +5,12 @@
 {% block content %}
 <div class="header">
   <h3>{{ recipe.title }}</h3>
+  {% if recipe.avg_rating %}
+  <p>Arvosana: {{ recipe.avg_rating }} / 5</p>
+  <p>{{ recipe.rating_count }} arvostelua</p>
+  {% else %}
+  <p>Ei arvosteluja</p>
+  {% endif %}
   {% if session.username == recipe.username %}
   <form action="/edit/{{ recipe.id }}">
     <button type="submit">Muokkaa</button>

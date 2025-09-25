@@ -38,25 +38,57 @@ def add_recipe(title, ingredients, instructions, created_at, user_id):
 def get_recipes(user_id=None):
     if user_id:
         sql = """
-        SELECT r.id, r.title, r.user_id, r.created_at, u.username
-        FROM recipes r
-          LEFT JOIN users u ON u.id = r.user_id
-        WHERE r.user_id = ?
-        ORDER BY r.created_at DESC
-        """
+            SELECT r.id,
+               r.title,
+               r.user_id,
+               r.created_at,
+               u.username,
+               r.rating_sum,
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN r.rating_sum * 1.0 / r.rating_count
+                   ELSE NULL
+               END AS avg_rating
+            FROM recipes r
+            LEFT JOIN users u ON u.id = r.user_id
+            WHERE r.user_id = ?
+            ORDER BY r.created_at DESC
+            """
         return db.query(sql, [user_id])
     
     sql = """
-        SELECT r.id, r.title, r.user_id, r.created_at, u.username
+        SELECT r.id,
+               r.title,
+               r.user_id,
+               r.created_at,
+               u.username,
+               r.rating_sum,
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                   ELSE NULL
+               END AS avg_rating
         FROM recipes r
-          LEFT JOIN users u ON u.id = r.user_id
+            LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC
         """
     return db.query(sql)
 
 def get_recipe(id):
     sql = """
-        SELECT r.id, r.title, ing.ingredient, ins.step, r.created_at, r.user_id, u.username 
+        SELECT r.id, 
+               r.title, 
+               ing.ingredient, 
+               ins.step, 
+               r.created_at, 
+               r.user_id, 
+               u.username, 
+               r.rating_sum, 
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                   ELSE NULL
+               END AS avg_rating
         FROM recipes r
           LEFT JOIN users u ON u.id = r.user_id
           LEFT JOIN ingredients ing ON ing.recipe_id = r.id
@@ -115,6 +147,16 @@ def add_review(recipe_id, user_id, rating, comment, created_at):
     sql = "INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)"
     db.execute(sql, [recipe_id, user_id, rating, comment, created_at])
 
+    if rating:
+        sql = """
+            UPDATE recipes
+            SET rating_sum = COALESCE(rating_sum, 0) + ?,
+                rating_count = COALESCE(rating_count, 0) + 1
+            WHERE id = ?
+            """
+        db.execute(sql, [rating, recipe_id])
+
+
 def get_reviews(recipe_id):
     sql = """
         SELECT r.id, r.rating, r.comment, r.created_at, u.username
@@ -135,12 +177,30 @@ def get_user_reviews(user_id):
         """
     return db.query(sql, [user_id])
 
+def get_rating(recipe_id):
+    sql ="""
+        SELECT AVG(rating)
+        FROM reviews
+        WHERE recipe_id = ?
+        """
+    rating = db.query(sql, [recipe_id])
+    if not rating:
+        return rating
+    return round(rating[0][0], 1)
+
 def search(query):
     sql = """
         SELECT r.id,
-            r.title,
-            r.created_at,
-            u.username
+               r.title,
+               r.user_id,
+               r.created_at,
+               u.username,
+               r.rating_sum,
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                   ELSE NULL
+               END AS avg_rating
         FROM recipes r
         LEFT JOIN users u ON r.user_id = u.id
         LEFT JOIN ingredients ing ON r.id = ing.recipe_id

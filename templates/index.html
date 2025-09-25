@@ -7,9 +7,16 @@
 {% for r in results %}
 <div class="item">
   <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
+  {% if r.avg_rating %}
+  <p>Arvosana: {{ r.avg_rating }} / 5</p>
+  <p>{{ r.rating_count }} arvostelua</p>
+  {% else %}
+  <p>Ei arvosteluja</p>
+  {% endif %}
   <p>
     <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
   </p>
+
 </div>
 {% endfor %}
 

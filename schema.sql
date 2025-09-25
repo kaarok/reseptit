@@ -8,7 +8,9 @@ CREATE TABLE recipes (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     title TEXT,
-    created_at TEXT
+    created_at TEXT,
+    rating_sum REAL,
+    rating_count INTEGER
 );
 
 CREATE TABLE ingredients (
