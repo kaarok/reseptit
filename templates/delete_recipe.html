@@ -2,19 +2,26 @@
 <html>
 
 <head>
-  <title>Reseptit</title>
+  <title>Poista resepti</title>
   <link rel="stylesheet" href="/static/main.css">
 </head>
 
 <body>
-  <h1>Reseptit</h1>
-  <p>Oletko varma että haluat poistaa reseptin {{ recipe.title }}?</p>
-  <form action="/edit/{{ recipe.id }}" method="GET">
-    <input type="submit" value="Peruuta" />
-  </form>
-  <br>
-  <form action="/delete/{{ recipe.id }}" method="POST">
-    <input type="submit" value="Poista resepti">
-  </form>
-
+  <div class="header">
+    <h1>Reseptit</h1>
+  </div>
+  <div class="content">
+    <div class="header">
+      <h2>Poista resepti</h2>
+    </div>
+    <div class="item">
+      <p>Oletko varma että haluat poistaa reseptin {{ recipe.title }}?</p>
+      <form action="/edit/{{ recipe.id }}" method="GET">
+        <button type="submit">Peruuta</button>
+      </form>
+      <form action="/delete/{{ recipe.id }}" method="POST">
+        <button type="submit">Poista resepti</button>
+      </form>
+    </div>
+  </div>
 </html>
