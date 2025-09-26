@@ -87,9 +87,10 @@ def logout():
 
 @app.route("/new_recipe")
 def new_recipe():
+    form_action = "/create_recipe"
     ingredients = [""]
     instructions = [""]
-    return render_template("new_recipe.html", ingredients=ingredients, instructions=instructions)
+    return render_template("new_recipe.html", form_action=form_action, ingredients=ingredients, instructions=instructions)
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
@@ -129,12 +130,13 @@ def show_user(user_id):
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
+    form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
     if request.method == "GET":
         title = recipe["title"] if recipe else ""
         ingredients = [r["ingredient"] for r in queries.get_ingredients(recipe_id)]
         instructions = [r["step"] for r in queries.get_instructions(recipe_id)]
-        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+        return render_template("edit.html", form_action=form_action, recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
 
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")

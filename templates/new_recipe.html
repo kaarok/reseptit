@@ -1,48 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "editor_layout.html" %}
 
-<head>
-  <title>Resepti</title>
-  <link rel="stylesheet" href="/static/main.css">
-</head>
+{% block title %}Uusi resepti{% endblock %}
 
-<body>
-  <div class="header">
-    <h1><a href="/">Reseptit</a></h1>
-  </div>
-  <div class="content">
-    <div class="header">
-      Uusi resepti
-    </div>
-    <div class="item">
-      <form action="/create_recipe" method="POST">
-        <p>
-          Reseptin nimi:
-          <input type="text" name="title" value="{{ title }}" class="textbox"/>
-        </p>
-        <ul>
-          Ainesosat:
-          {% for i in ingredients %}
-          <li><input type="text" name="ingredient" value="{{ i }}" class="textbox"></li>
-          {% endfor %}
-        </ul>
-        <button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button>
-        <ol>
-          Ohjeet:
-          {% for i in instructions %}
-          <li><input type="text" name="instruction" value="{{ i }}" class="textbox"></li>
-          {% endfor %}
-        </ol>
-        <button type="submit" name="action" value="instructions_add_row">Uusi ohje</button>
-        <br><br>
-        <button type="submit" name="action" value="publish">Tallenna</button>
-      </form>
-      <br>
-      <form action="/" method="GET">
-        <button type="submit">Peruuta</button>
-      </form>
-    </div>
-  </div>
-</body>
+{% block name %}Uusi resepti{% endblock %}
 
-</html>
+{% block actions %}
+<form action="/" method="GET">
+  <button type="submit">Peruuta</button>
+</form>
+{% endblock %}

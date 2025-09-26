@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+  <div class="header">
+    <h1><a href="/">Reseptit</a></h1>
+  </div>
+  <div class="content">
+    <div class="header">
+      {% block name %}{% endblock %}
+    </div>
+    <div class="item">
+      <form action="{{ form_action }}" method="POST">
+        <p>
+          Reseptin nimi:
+          <input type="text" name="title" value="{{ title }}" class="textbox"/>
+        </p>
+        <ul>
+          Ainesosat:
+          {% for i in ingredients %}
+          <li><input type="text" name="ingredient" value="{{ i }}" class="textbox"></li>
+          {% endfor %}
+        </ul>
+        <button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button>
+        <ol>
+          Ohjeet:
+          {% for i in instructions %}
+          <li><input type="text" name="instruction" value="{{ i }}" class="textbox"></li>
+          {% endfor %}
+        </ol>
+        <button type="submit" name="action" value="instructions_add_row">Uusi ohje</button>
+        <br>
+        <button type="submit" name="action" value="publish">Tallenna</button>
+      </form>
+      {% block actions %}
+      {% endblock %}
+    </div>
+  </div>
+</body>
+</html>
