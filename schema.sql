@@ -6,7 +6,7 @@ CREATE TABLE users (
 
 CREATE TABLE recipes (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     title TEXT,
     created_at TEXT,
     rating_sum REAL,
