@@ -7,11 +7,10 @@
 - Käyttäjä näkee sovellukseen lisätyt reseptit.
 - Käyttäjä pystyy etsimään reseptejä hakusanalla.
 - Käyttäjä pystyy antamaan reseptille arvostelun, jossa on kommentti ja arvosana.
-- Reseptistä näytetään arvostelut.
+- Reseptistä näytetään arvostelut ja keskimääräinen arvosana.
 - Käyttäjäsivu näyttää, listan käyttäjän lisäämistä resepteistä ja montako reseptiä ja arvostelua käyttäjä on lisännyt.
 
 ### Tulossa
-- Reseptistä näytetään keskimääräinen arvosana.
 - Käyttäjä pystyy valitsemaan reseptille yhden tai useamman luokittelun (esim. alkuruoka, intialainen, vegaaninen).
 - Käyttäjä pystyy lisäämään reseptille kuvan.
 - Ulkonäkö/käytettävyys muutoksia:
