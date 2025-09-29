@@ -140,13 +140,22 @@ def show_recipe(recipe_id):
     reviews = queries.get_reviews(recipe_id)
     return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, reviews=reviews)
 
+@app.route("/user/<int:user_id>/<int:page>", methods=["GET"])
 @app.route("/user/<int:user_id>", methods=["GET"])
-def show_user(user_id):
+def show_user(user_id, page=1):
     username = queries.get_username(user_id)
-    recipes = queries.get_recipes(user_id)
+    recipes = queries.get_recipes(page, user_id)
     reviews = queries.get_user_reviews(user_id)
-    activity = {"recipe_count": len(recipes), "review_count": len(reviews)}
-    return render_template("user.html", username=username, user_recipes=recipes, user_reviews=reviews, activity=activity)
+    recipe_count = queries.get_recipe_count(user_id)
+    activity = {"recipe_count": recipe_count, "review_count": len(reviews)}
+
+    page_count = queries.get_page_count(recipe_count)
+    if page < 1:
+         return redirect("/user/" + str(user_id))
+    if page > page_count:
+        return redirect("/user/" + str(user_id) + "/" + str(page_count))
+    
+    return render_template("user.html", user_id=user_id, username=username, user_recipes=recipes, user_reviews=reviews, activity=activity, page=page, page_count=page_count)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):

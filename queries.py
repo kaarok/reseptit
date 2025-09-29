@@ -39,7 +39,11 @@ def add_recipe(title, ingredients, instructions, created_at, user_id):
 
     return recipe_id
 
-def get_recipe_count():
+def get_recipe_count(user_id=None):
+    if user_id:
+        sql = "SELECT COUNT(id) FROM recipes WHERE user_id = ?"
+        return db.query(sql, [user_id])[0][0]
+    
     sql = "SELECT COUNT(id) FROM recipes"
     return db.query(sql)[0][0]
 

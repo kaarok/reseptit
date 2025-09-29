@@ -18,7 +18,7 @@
   </p>
 </div>
 {% endfor %}
-
+{% if page_count > 1 %}
   {% if query %}
     <div class="header">
       {% if page > 1 %}
@@ -40,7 +40,7 @@
       {% endif %}
     </div>
   {% endif %}
-
+{% endif %}
 
 {% endblock %}
 
