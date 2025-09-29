@@ -240,7 +240,8 @@ def search(query, page):
         r.created_at DESC
         LIMIT ? OFFSET ?
         """
-    params = ["%" + query + "%"] * 5 + [page_size, page]
+    offset = (page - 1) * page_size
+    params = ["%" + query + "%"] * 5 + [page_size, offset]
     return db.query(sql, params)
 
 def search_result_count(query):
