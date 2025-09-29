@@ -15,11 +15,11 @@
         Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
       </p>
       </br>
-      <form action="/logout">
-        <button action="/logout"type="submit">Kirjaudu ulos</button>
-      </form>
       <form action="/new_recipe">
         <button type="submit">Uusi resepti</button>
+      </form>
+      <form action="/logout">
+        <button action="/logout"type="submit">Kirjaudu ulos</button>
       </form>
       {% else %}
       <form action="/register">
@@ -29,14 +29,6 @@
         <button type="submit">Kirjaudu sisään</button>
       </form>
       {% endif %}
-      <form action="/search" method="GET">
-        {% if query %}
-        <input type="text" name="query" value="{{ query }}" class="textbox" />
-        {% else %}
-        <input type="text" name="query" class="textbox"/>
-        {% endif %}
-        <button type="submit" name="action" value="search">Hae</button>
-      </form>
     </div>
   </div>
 

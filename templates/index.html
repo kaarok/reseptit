@@ -3,6 +3,16 @@
 {% block title %}Reseptit{% endblock %}
 
 {% block content %}
+<div class="header">
+  <form action="/search" method="GET">
+      {% if query %}
+      <input type="text" name="query" value="{{ query }}" class="textbox" />
+      {% else %}
+      <input type="text" name="query" class="textbox"/>
+      {% endif %}
+      <button type="submit" name="action" value="search">Hae</button>
+    </form>
+</div>
 
 {% for r in results %}
 <div class="item">
