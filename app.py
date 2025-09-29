@@ -1,30 +1,50 @@
 import sqlite3
-import datetime
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import datetime
+import math
+
 import queries
 import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-
+@app.route("/<int:page>")
 @app.route("/")
-def index():
+def index(page=1):
+    page_count = queries.get_page_count()
+
+    if page < 1:
+         return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
     for key in list(session.keys()):
         if key.startswith("u_"):
             session.pop(key)
 
-    results = queries.get_recipes()
-    return render_template("index.html", results=results)
+    results = queries.get_recipes(page)
+    return render_template("index.html", results=results, page=page, page_count=page_count)
 
+@app.route("/search/<int:page>")
 @app.route("/search")
-def search():
+def search(page=1):
     query = request.args.get("query")
     if query == "":
         return redirect("/")
-    results = queries.search(query) if query else []
-    return render_template("index.html", query=query, results=results)
+    
+    results = queries.search(query, page) if query else []
+    result_count = queries.search_result_count(query)
+    page_count = queries.get_page_count(result_count)
+    
+    if page < 1:
+         return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
+    return render_template("index.html", query=query, results=results, page=page, page_count=page_count)
 
 @app.route("/register")
 def register():

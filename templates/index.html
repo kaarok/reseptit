@@ -16,9 +16,31 @@
   <p>
     <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
   </p>
-
 </div>
 {% endfor %}
+
+  {% if query %}
+    <div class="header">
+      {% if page > 1 %}
+      <a href="{{ url_for('search', page=page - 1, query=query) }}"><button>Edellinen</button></a>
+      {% endif %}
+      Sivu {{ page }} / {{ page_count }}
+      {% if page < page_count %}
+      <a href="{{ url_for('search', page=page + 1, query=query) }}"><button>Seuraava</button></a>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="header">
+      {% if page > 1 %}
+      <a href="/{{ page - 1}}"><button>Edellinen</button></a>
+      {% endif %}
+      Sivu {{ page }} / {{ page_count }}
+      {% if page < page_count %}
+      <a href="/{{ page + 1}}"><button>Seuraava</button></a>
+      {% endif %}
+    </div>
+  {% endif %}
+
 
 {% endblock %}
 

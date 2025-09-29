@@ -1,4 +1,8 @@
 import db
+import math
+
+page_size = 10
+
 
 def add_user(username, password_hash):
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
@@ -35,7 +39,22 @@ def add_recipe(title, ingredients, instructions, created_at, user_id):
 
     return recipe_id
 
-def get_recipes(user_id=None):
+def get_recipe_count():
+    sql = "SELECT COUNT(id) FROM recipes"
+    return db.query(sql)[0][0]
+
+def get_page_count(recipe_count=get_recipe_count()):
+    page_count = math.ceil(recipe_count / page_size)
+    page_count = max(page_count, 1)
+    return page_count
+
+def get_page_size():
+    return page_size
+
+def get_recipes(page=1, user_id=None):
+    limit = page_size
+    offset = page_size * (page - 1)
+
     if user_id:
         sql = """
             SELECT r.id,
@@ -53,8 +72,9 @@ def get_recipes(user_id=None):
             LEFT JOIN users u ON u.id = r.user_id
             WHERE r.user_id = ?
             ORDER BY r.created_at DESC
+            LIMIT ? OFFSET ?
             """
-        return db.query(sql, [user_id])
+        return db.query(sql, [user_id, limit, offset])
     
     sql = """
         SELECT r.id,
@@ -71,8 +91,9 @@ def get_recipes(user_id=None):
         FROM recipes r
             LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC
+        LIMIT ? OFFSET ?
         """
-    return db.query(sql)
+    return db.query(sql, [limit, offset])
 
 def get_recipe(id):
     sql = """
@@ -188,7 +209,7 @@ def get_rating(recipe_id):
         return rating
     return round(rating[0][0], 1)
 
-def search(query):
+def search(query, page):
     sql = """
         SELECT r.id,
                r.title,
@@ -198,20 +219,38 @@ def search(query):
                r.rating_sum,
                r.rating_count,
                CASE
-                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
-                   ELSE NULL
+                 WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                 ELSE NULL
                END AS avg_rating
         FROM recipes r
-        LEFT JOIN users u ON r.user_id = u.id
-        LEFT JOIN ingredients ing ON r.id = ing.recipe_id
-        LEFT JOIN instructions ins ON r.id = ins.recipe_id
+          LEFT JOIN users u ON r.user_id = u.id
+          LEFT JOIN ingredients ing ON r.id = ing.recipe_id
+          LEFT JOIN instructions ins ON r.id = ins.recipe_id
         WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
         GROUP BY r.id
         ORDER BY
-        CASE
-        WHEN r.title LIKE ? THEN 0
-        ELSE 1
-        END,
-        r.created_at DESC"""
-    params = ["%" + query + "%"] * 5
+          CASE
+            WHEN r.title LIKE ? THEN 0
+          ELSE 1
+          END,
+        r.created_at DESC
+        LIMIT ? OFFSET ?
+        """
+    params = ["%" + query + "%"] * 5 + [page_size, page]
     return db.query(sql, params)
+
+def search_result_count(query):
+    sql = """
+        SELECT COUNT(DISTINCT r.id)
+        FROM recipes r
+          LEFT JOIN users u ON r.user_id = u.id
+          LEFT JOIN ingredients ing ON r.id = ing.recipe_id
+          LEFT JOIN instructions ins ON r.id = ins.recipe_id
+        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
+        """
+    
+    params = ["%" + query + "%"] * 4
+    count = db.query(sql, params)
+    if not count:
+        return None
+    return count[0][0]
