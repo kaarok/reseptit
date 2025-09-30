@@ -34,3 +34,14 @@ CREATE TABLE reviews (
     comment TEXT,
     created_at
 );
+
+CREATE TABLE tags (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
+CREATE TABLE recipe_tags (
+    id INTEGER PRIMARY KEY,
+    recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
+    tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE
+);

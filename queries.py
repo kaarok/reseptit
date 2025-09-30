@@ -20,7 +20,7 @@ def get_password_hash(username):
     sql = "SELECT password_hash FROM users WHERE username = ?"
     return db.query(sql, [username])
 
-def add_recipe(title, ingredients, instructions, created_at, user_id):
+def add_recipe(title, ingredients, instructions, tags, created_at, user_id):
     sql = "INSERT INTO recipes (title, created_at, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, created_at, user_id])
     recipe_id = db.last_insert_id()
@@ -36,6 +36,13 @@ def add_recipe(title, ingredients, instructions, created_at, user_id):
         if i != "":
             db.execute(sql, [recipe_id, i, position])
             position += 1
+    
+    for tag in tags:
+        if tag != "":
+            tag = tag.strip().lower()
+            db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", [tag])
+            tag_id = db.query("SELECT id FROM tags WHERE name = ?", [tag])[0]["id"]
+            db.execute("INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)", [recipe_id, tag_id])
 
     return recipe_id
 
@@ -103,12 +110,10 @@ def get_recipe(id):
     sql = """
         SELECT r.id, 
                r.title, 
-               ing.ingredient, 
-               ins.step, 
                r.created_at, 
-               r.user_id, 
-               u.username, 
-               r.rating_sum, 
+               r.user_id,
+               u.username,
+               r.rating_sum,
                r.rating_count,
                CASE
                    WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
@@ -163,8 +168,25 @@ def get_instructions(recipe_id):
         SELECT i.step, i.position
         FROM instructions i
         WHERE i.recipe_id = ?
-        ORDER BY i.position"""
+        ORDER BY i.position
+        """
     return db.query(sql, [recipe_id])
+
+def get_tags(recipe_id):
+    sql = """
+        SELECT t.name
+        FROM recipe_tags rt
+          LEFT JOIN tags t ON t.id = rt.tag_id
+        WHERE rt.recipe_id = ?
+        """
+    return db.query(sql, [recipe_id])
+
+def get_all_tags():
+    sql = "SELECT name FROM tags"
+    tags = db.query(sql)
+    if not tags:
+        return None
+    return [tag["name"] for tag in tags]
 
 def add_review(recipe_id, user_id, rating, comment, created_at):
     if rating == None and comment == None:
@@ -230,7 +252,9 @@ def search(query, page):
           LEFT JOIN users u ON r.user_id = u.id
           LEFT JOIN ingredients ing ON r.id = ing.recipe_id
           LEFT JOIN instructions ins ON r.id = ins.recipe_id
-        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
+          LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
+          LEFT JOIN tags t ON t.id = rt.tag_id
+        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ? OR t.name LIKE ?
         GROUP BY r.id
         ORDER BY
           CASE
@@ -241,7 +265,7 @@ def search(query, page):
         LIMIT ? OFFSET ?
         """
     offset = (page - 1) * page_size
-    params = ["%" + query + "%"] * 5 + [page_size, offset]
+    params = ["%" + query + "%"] * 6 + [page_size, offset]
     return db.query(sql, params)
 
 def search_result_count(query):
@@ -251,10 +275,12 @@ def search_result_count(query):
           LEFT JOIN users u ON r.user_id = u.id
           LEFT JOIN ingredients ing ON r.id = ing.recipe_id
           LEFT JOIN instructions ins ON r.id = ins.recipe_id
-        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ?
+          LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
+          LEFT JOIN tags t ON t.id = rt.tag_id
+        WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ? OR t.name LIKE ?
         """
     
-    params = ["%" + query + "%"] * 4
+    params = ["%" + query + "%"] * 5
     count = db.query(sql, params)
     if not count:
         return None

@@ -34,6 +34,18 @@
           {% endfor %}
         </ol>
         <button type="submit" name="action" value="instructions_add_row">Uusi ohje</button>
+        <ul>
+          Hakusanat:
+          {% for tag in tags %}
+          <li><input type="text" name="tags" value="{{ tag }}" class="textbox" list="tag_options"></li>
+          {% endfor %}
+        </ul>
+        <datalist id="tag_options">
+          {% for tag in all_tags %}
+          <option value="{{ tag }}">
+          {% endfor %}
+        </datalist>
+        <button type="submit" name="action" value="tags_add_row">Uusi hakusana</button>
         <br>
         <button type="submit" name="action" value="publish">Tallenna</button>
       </form>

@@ -33,6 +33,12 @@
   <br>
   <p><i>{{recipe.username}}</i></p>
   <p>{{ recipe.created_at }}</p>
+  <br>
+  <p>
+    {% for tag in tags %}
+    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag.name }}</a>&nbsp;
+    {% endfor %}
+  </p>
 </div>
 
 <div class="header">

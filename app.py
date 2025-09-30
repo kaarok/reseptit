@@ -110,26 +110,35 @@ def new_recipe():
     form_action = "/create_recipe"
     ingredients = [""]
     instructions = [""]
-    return render_template("new_recipe.html", form_action=form_action, ingredients=ingredients, instructions=instructions)
+    tags = [""]
+    all_tags = queries.get_all_tags()
+
+    return render_template("new_recipe.html", form_action=form_action, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
     instructions = request.form.getlist("instruction")
+    tags = request.form.getlist("tags")
+    all_tags = queries.get_all_tags()
 
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions)
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
     
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions)
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+    
+    if request.form.get("action") == "tags_add_row":
+        tags.append("")
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
     
     if request.form.get("action") == "publish":
         created_at = datetime.datetime.now().strftime("%d.%m.%Y")
         user_id = queries.get_user_id(session["username"])
-        recipe_id = queries.add_recipe(title, ingredients, instructions, created_at, user_id)
+        recipe_id = queries.add_recipe(title, ingredients, instructions, tags, created_at, user_id)
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
@@ -137,8 +146,10 @@ def show_recipe(recipe_id):
     recipe = queries.get_recipe(recipe_id)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
+    tags = queries.get_tags(recipe_id)
     reviews = queries.get_reviews(recipe_id)
-    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, reviews=reviews)
+    
+    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, tags=tags, reviews=reviews)
 
 @app.route("/user/<int:user_id>/<int:page>", methods=["GET"])
 @app.route("/user/<int:user_id>", methods=["GET"])
