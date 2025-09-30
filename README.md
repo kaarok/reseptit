@@ -4,6 +4,7 @@
 - Sovelluksessa käyttäjät pystyvät jakamaan ruokareseptejään. Reseptissä lukee tarvittavat ainekset ja valmistusohje.
 - Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
 - Käyttäjä pystyy lisäämään reseptejä, muokkaamaan ja poistamaan niitä.
+- Käyttäjä pystyy lisäämään reseptille yhden tai useamman luokittelun (esim. alkuruoka, intialainen, vegaaninen).
 - Käyttäjä näkee sovellukseen lisätyt reseptit.
 - Käyttäjä pystyy etsimään reseptejä hakusanalla.
 - Käyttäjä pystyy antamaan reseptille arvostelun, jossa on kommentti ja arvosana.
@@ -11,7 +12,6 @@
 - Käyttäjäsivu näyttää, listan käyttäjän lisäämistä resepteistä ja montako reseptiä ja arvostelua käyttäjä on lisännyt.
 
 ### Tulossa
-- Käyttäjä pystyy valitsemaan reseptille yhden tai useamman luokittelun (esim. alkuruoka, intialainen, vegaaninen).
 - Käyttäjä pystyy lisäämään reseptille kuvan.
 - Ulkonäkö/käytettävyys muutoksia:
   - Fontit suuremmiksi monessa kohtaa.
