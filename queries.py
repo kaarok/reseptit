@@ -9,11 +9,11 @@ def add_user(username, password_hash):
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
 
-def get_user_id(username):
+def get_user_id_by_name(username):
     sql = "SELECT id FROM users WHERE username = ?"
     return db.query(sql, [username])[0][0]
 
-def get_username(id):
+def get_username_by_id(id):
     sql = "SELECT username FROM users WHERE id = ?"
     return db.query(sql, [id])[0][0]
 
@@ -50,79 +50,6 @@ def add_recipe(title, ingredients, instructions, tags, created_at, user_id):
 
     return recipe_id
 
-def get_recipe_count(user_id=None):
-    if user_id:
-        sql = "SELECT COUNT(id) FROM recipes WHERE user_id = ?"
-        return db.query(sql, [user_id])[0][0]
-    
-    sql = "SELECT COUNT(id) FROM recipes"
-    return db.query(sql)[0][0]
-
-def get_recipes(page=1, user_id=None):
-    limit = config.page_size
-    offset = limit * (page - 1)
-
-    if user_id:
-        sql = """
-            SELECT r.id,
-               r.title,
-               r.user_id,
-               r.created_at,
-               u.username,
-               r.rating_sum,
-               r.rating_count,
-               CASE
-                   WHEN r.rating_count > 0 THEN r.rating_sum * 1.0 / r.rating_count
-                   ELSE NULL
-               END AS avg_rating
-            FROM recipes r
-            LEFT JOIN users u ON u.id = r.user_id
-            WHERE r.user_id = ?
-            ORDER BY r.created_at DESC
-            LIMIT ? OFFSET ?
-            """
-        return db.query(sql, [user_id, limit, offset])
-    
-    sql = """
-        SELECT r.id,
-               r.title,
-               r.user_id,
-               r.created_at,
-               u.username,
-               r.rating_sum,
-               r.rating_count,
-               CASE
-                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
-                   ELSE NULL
-               END AS avg_rating
-        FROM recipes r
-            LEFT JOIN users u ON u.id = r.user_id
-        ORDER BY r.created_at DESC
-        LIMIT ? OFFSET ?
-        """
-    return db.query(sql, [limit, offset])
-
-def get_recipe(id):
-    sql = """
-        SELECT r.id, 
-               r.title, 
-               r.created_at, 
-               r.user_id,
-               u.username,
-               r.rating_sum,
-               r.rating_count,
-               CASE
-                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
-                   ELSE NULL
-               END AS avg_rating
-        FROM recipes r
-          LEFT JOIN users u ON u.id = r.user_id
-          LEFT JOIN ingredients ing ON ing.recipe_id = r.id
-          LEFT JOIN instructions ins ON ins.recipe_id = r.id
-        WHERE r.id = ?
-        """
-    return db.query(sql, [id])[0]
-
 def update_recipe(recipe_id, title, ingredients, instructions, tags):
     sql = "UPDATE recipes SET title = ? WHERE id = ?"
     db.execute(sql, [title, recipe_id])
@@ -158,6 +85,80 @@ def update_recipe(recipe_id, title, ingredients, instructions, tags):
 def remove_recipe(recipe_id):
     sql = "DELETE FROM recipes WHERE id = ?"
     db.execute(sql, [recipe_id])
+
+def get_recipe_count(user_id=None):
+    if user_id:
+        sql = "SELECT COUNT(id) FROM recipes WHERE user_id = ?"
+        return db.query(sql, [user_id])[0][0]
+    
+    sql = "SELECT COUNT(id) FROM recipes"
+    return db.query(sql)[0][0]
+
+def get_recipes(page=1):
+    limit = config.page_size
+    offset = limit * (page - 1)
+    sql = """
+        SELECT r.id,
+               r.title,
+               r.user_id,
+               r.created_at,
+               u.username,
+               r.rating_sum,
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                   ELSE NULL
+               END AS avg_rating
+        FROM recipes r
+            LEFT JOIN users u ON u.id = r.user_id
+        ORDER BY r.created_at DESC
+        LIMIT ? OFFSET ?
+        """
+    return db.query(sql, [limit, offset])
+
+def get_user_recipes(user_id, page=1):
+    limit = config.page_size
+    offset = limit * (page - 1)
+    sql = """
+        SELECT r.id,
+        r.title,
+        r.user_id,
+        r.created_at,
+        u.username,
+        r.rating_sum,
+        r.rating_count,
+        CASE
+            WHEN r.rating_count > 0 THEN r.rating_sum * 1.0 / r.rating_count
+            ELSE NULL
+        END AS avg_rating
+        FROM recipes r
+        LEFT JOIN users u ON u.id = r.user_id
+        WHERE r.user_id = ?
+        ORDER BY r.created_at DESC
+        LIMIT ? OFFSET ?
+        """
+    return db.query(sql, [user_id, limit, offset])
+
+def get_recipe(id):
+    sql = """
+        SELECT r.id, 
+               r.title, 
+               r.created_at, 
+               r.user_id,
+               u.username,
+               r.rating_sum,
+               r.rating_count,
+               CASE
+                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                   ELSE NULL
+               END AS avg_rating
+        FROM recipes r
+          LEFT JOIN users u ON u.id = r.user_id
+          LEFT JOIN ingredients ing ON ing.recipe_id = r.id
+          LEFT JOIN instructions ins ON ins.recipe_id = r.id
+        WHERE r.id = ?
+        """
+    return db.query(sql, [id])[0]
 
 # --------------------
 # INGREDIENTS
@@ -239,21 +240,10 @@ def get_user_reviews(user_id):
         """
     return db.query(sql, [user_id])
 
-def get_rating(recipe_id):
-    sql ="""
-        SELECT AVG(rating)
-        FROM reviews
-        WHERE recipe_id = ?
-        """
-    rating = db.query(sql, [recipe_id])
-    if not rating:
-        return rating
-    return round(rating[0][0], 1)
-
 # --------------------
 # SEARCH
 # --------------------
-def search(query, page):
+def get_search(query, page):
     sql = """
         SELECT r.id,
                r.title,
@@ -286,7 +276,7 @@ def search(query, page):
     params = ["%" + query + "%"] * 6 + [config.page_size, offset]
     return db.query(sql, params)
 
-def search_result_count(query):
+def get_search_result_count(query):
     sql = """
         SELECT COUNT(DISTINCT r.id)
         FROM recipes r
