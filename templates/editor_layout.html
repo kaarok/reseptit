@@ -20,33 +20,41 @@
           Reseptin nimi:
           <input type="text" name="title" value="{{ title }}" class="textbox"/>
         </p>
-        <ul>
+        <table>
           Ainesosat:
           {% for i in ingredients %}
-          <li><input type="text" name="ingredient" value="{{ i }}" class="textbox"></li>
+          <tr>
+            <td><input type="text" name="ingredient" value="{{ i }}" class="textbox"></td>
+          </tr>
           {% endfor %}
-        </ul>
-        <button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button>
+          <tr>
+            <td><button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button></td>
+          </tr>
+        </table>
         <ol>
           Ohjeet:
           {% for i in instructions %}
-          <li><input type="text" name="instruction" value="{{ i }}" class="textbox"></li>
+          <li><br><textarea type="text" name="instruction" value="{{ i }}" class="textbox" cols="50" rows="4"></textarea></li>
           {% endfor %}
+          <li><button type="submit" name="action" value="instructions_add_row">Uusi ohje</button></li>
         </ol>
-        <button type="submit" name="action" value="instructions_add_row">Uusi ohje</button>
-        <ul>
+        <table>
           Hakusanat:
           {% for tag in tags %}
-          <li><input type="text" name="tags" value="{{ tag }}" class="textbox" list="tag_options"></li>
+          <tr>
+            <td><input type="text" name="tags" value="{{ tag }}" class="textbox" list="tag_options"></td>
+          </tr>
           {% endfor %}
-        </ul>
-        <datalist id="tag_options">
-          {% for tag in all_tags %}
-          <option value="{{ tag }}">
-          {% endfor %}
-        </datalist>
-        <button type="submit" name="action" value="tags_add_row">Uusi hakusana</button>
-        <br>
+          <datalist id="tag_options">
+            {% for tag in all_tags %}
+            <option value="{{ tag }}">
+            {% endfor %}
+          </datalist>
+          <tr>
+            <td><button type="submit" name="action" value="tags_add_row">Uusi hakusana</button></td>
+          </tr>
+        </table>
+        <br><br><br>
         <button type="submit" name="action" value="publish">Tallenna</button>
       </form>
       {% block actions %}

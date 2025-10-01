@@ -70,6 +70,7 @@ button:hover {
     color: var(--black);
 
     padding: 0.5em;
+    margin: 0.5em;
 
     border-width: 5px;
     border-color: var(--red);
