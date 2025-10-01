@@ -1,9 +1,10 @@
 import db
 import math
+import config
 
-page_size = 10
-
-
+# --------------------
+# USERS
+# --------------------
 def add_user(username, password_hash):
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
@@ -20,6 +21,9 @@ def get_password_hash(username):
     sql = "SELECT password_hash FROM users WHERE username = ?"
     return db.query(sql, [username])
 
+# --------------------
+# RECIPES
+# --------------------
 def add_recipe(title, ingredients, instructions, tags, created_at, user_id):
     sql = "INSERT INTO recipes (title, created_at, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, created_at, user_id])
@@ -54,17 +58,9 @@ def get_recipe_count(user_id=None):
     sql = "SELECT COUNT(id) FROM recipes"
     return db.query(sql)[0][0]
 
-def get_page_count(recipe_count=get_recipe_count()):
-    page_count = math.ceil(recipe_count / page_size)
-    page_count = max(page_count, 1)
-    return page_count
-
-def get_page_size():
-    return page_size
-
 def get_recipes(page=1, user_id=None):
-    limit = page_size
-    offset = page_size * (page - 1)
+    limit = config.page_size
+    offset = limit * (page - 1)
 
     if user_id:
         sql = """
@@ -163,6 +159,9 @@ def remove_recipe(recipe_id):
     sql = "DELETE FROM recipes WHERE id = ?"
     db.execute(sql, [recipe_id])
 
+# --------------------
+# INGREDIENTS
+# --------------------
 def get_ingredients(recipe_id):
     sql = """
         SELECT i.ingredient
@@ -170,8 +169,10 @@ def get_ingredients(recipe_id):
         WHERE i.recipe_id = ?
         """
     return db.query(sql, [recipe_id])
-    
 
+# --------------------
+# INSTRUCTIONS
+# --------------------
 def get_instructions(recipe_id):
     sql = """
         SELECT i.step, i.position
@@ -181,6 +182,9 @@ def get_instructions(recipe_id):
         """
     return db.query(sql, [recipe_id])
 
+# --------------------
+# TAGS
+# --------------------
 def get_tags(recipe_id):
     sql = """
         SELECT t.name
@@ -197,6 +201,9 @@ def get_all_tags():
         return None
     return [tag["name"] for tag in tags]
 
+# --------------------
+# REVIEWS
+# --------------------
 def add_review(recipe_id, user_id, rating, comment, created_at):
     if rating == None and comment == None:
         return None
@@ -211,7 +218,6 @@ def add_review(recipe_id, user_id, rating, comment, created_at):
             WHERE id = ?
             """
         db.execute(sql, [rating, recipe_id])
-
 
 def get_reviews(recipe_id):
     sql = """
@@ -244,6 +250,9 @@ def get_rating(recipe_id):
         return rating
     return round(rating[0][0], 1)
 
+# --------------------
+# SEARCH
+# --------------------
 def search(query, page):
     sql = """
         SELECT r.id,
@@ -273,8 +282,8 @@ def search(query, page):
         r.created_at DESC
         LIMIT ? OFFSET ?
         """
-    offset = (page - 1) * page_size
-    params = ["%" + query + "%"] * 6 + [page_size, offset]
+    offset = (page - 1) * config.page_size
+    params = ["%" + query + "%"] * 6 + [config.page_size, offset]
     return db.query(sql, params)
 
 def search_result_count(query):
@@ -294,3 +303,12 @@ def search_result_count(query):
     if not count:
         return None
     return count[0][0]
+
+# --------------------
+# PAGES
+# --------------------
+def get_page_count(recipe_count=get_recipe_count()):
+    page_count = math.ceil(recipe_count / config.page_size)
+    page_count = max(page_count, 1)
+    return page_count
+

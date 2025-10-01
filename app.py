@@ -1,9 +1,8 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import datetime
-import math
 
 import queries
 import config
@@ -11,6 +10,9 @@ import config
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+# --------------------
+# HOMEPAGE
+# --------------------
 @app.route("/<int:page>")
 @app.route("/")
 def index(page=1):
@@ -46,6 +48,9 @@ def search(page=1):
 
     return render_template("index.html", query=query, results=results, page=page, page_count=page_count)
 
+# --------------------
+# USERS
+# --------------------
 @app.route("/register")
 def register():
     return render_template("register.html")
@@ -75,7 +80,6 @@ def create_user():
     session["user_id"] = queries.get_user_id(username)
     return redirect("/")
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -98,12 +102,41 @@ def login():
         session["username"] = username
         session["user_id"] = queries.get_user_id(username)
         return redirect("/")
-            
 
 @app.route("/logout")
 def logout():
     del session["username"]
     return redirect("/")
+
+@app.route("/user/<int:user_id>/<int:page>", methods=["GET"])
+@app.route("/user/<int:user_id>", methods=["GET"])
+def show_user(user_id, page=1):
+    username = queries.get_username(user_id)
+    recipes = queries.get_recipes(page, user_id)
+    reviews = queries.get_user_reviews(user_id)
+    recipe_count = queries.get_recipe_count(user_id)
+    activity = {"recipe_count": recipe_count, "review_count": len(reviews)}
+
+    page_count = queries.get_page_count(recipe_count)
+    if page < 1:
+         return redirect("/user/" + str(user_id))
+    if page > page_count:
+        return redirect("/user/" + str(user_id) + "/" + str(page_count))
+    
+    return render_template("user.html", user_id=user_id, username=username, user_recipes=recipes, user_reviews=reviews, activity=activity, page=page, page_count=page_count)
+
+# --------------------
+# RECIPES
+# --------------------
+@app.route("/recipe/<int:recipe_id>", methods=["GET"])
+def show_recipe(recipe_id):
+    recipe = queries.get_recipe(recipe_id)
+    ingredients = queries.get_ingredients(recipe_id)
+    instructions = queries.get_instructions(recipe_id)
+    tags = queries.get_tags(recipe_id)
+    reviews = queries.get_reviews(recipe_id)
+    
+    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, tags=tags, reviews=reviews)
 
 @app.route("/new_recipe")
 def new_recipe():
@@ -140,33 +173,6 @@ def create_recipe():
         user_id = queries.get_user_id(session["username"])
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, created_at, user_id)
         return redirect("/recipe/" + str(recipe_id))
-
-@app.route("/recipe/<int:recipe_id>", methods=["GET"])
-def show_recipe(recipe_id):
-    recipe = queries.get_recipe(recipe_id)
-    ingredients = queries.get_ingredients(recipe_id)
-    instructions = queries.get_instructions(recipe_id)
-    tags = queries.get_tags(recipe_id)
-    reviews = queries.get_reviews(recipe_id)
-    
-    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, tags=tags, reviews=reviews)
-
-@app.route("/user/<int:user_id>/<int:page>", methods=["GET"])
-@app.route("/user/<int:user_id>", methods=["GET"])
-def show_user(user_id, page=1):
-    username = queries.get_username(user_id)
-    recipes = queries.get_recipes(page, user_id)
-    reviews = queries.get_user_reviews(user_id)
-    recipe_count = queries.get_recipe_count(user_id)
-    activity = {"recipe_count": recipe_count, "review_count": len(reviews)}
-
-    page_count = queries.get_page_count(recipe_count)
-    if page < 1:
-         return redirect("/user/" + str(user_id))
-    if page > page_count:
-        return redirect("/user/" + str(user_id) + "/" + str(page_count))
-    
-    return render_template("user.html", user_id=user_id, username=username, user_recipes=recipes, user_reviews=reviews, activity=activity, page=page, page_count=page_count)
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
@@ -212,7 +218,10 @@ def delete_recipe(recipe_id):
     if request.method == "POST":
         queries.remove_recipe(recipe_id)
         return redirect("/")
-    
+
+# --------------------
+# REVIEWS
+# --------------------
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
 def create_review(recipe_id):
     rating = request.form["rating"]

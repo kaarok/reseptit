@@ -34,7 +34,7 @@
         <ol>
           Ohjeet:
           {% for i in instructions %}
-          <li><br><textarea type="text" name="instruction" value="{{ i }}" class="textbox" cols="50" rows="4"></textarea></li>
+          <li><br><textarea type="text" name="instruction" class="textbox" cols="50" rows="4">{{ i }}</textarea></li>
           {% endfor %}
           <li><button type="submit" name="action" value="instructions_add_row">Uusi ohje</button></li>
         </ol>
