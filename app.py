@@ -2,13 +2,20 @@ import sqlite3
 from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import datetime
+from datetime import datetime
 
 import queries
 import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+@app.template_filter("format_date")
+def format_date(value):
+    if not value:
+        return ""
+    value = datetime.fromisoformat(value)
+    return value.strftime("%d.%m.%Y")
 
 # --------------------
 # HOMEPAGE
@@ -37,7 +44,7 @@ def search(page=1):
     if query == "":
         return redirect("/")
     
-    results = queries.get_search(query, page) if query else []
+    results = queries.get_search_results(query, page) if query else []
     result_count = queries.get_search_result_count(query)
     page_count = queries.get_page_count(result_count)
     
@@ -169,9 +176,8 @@ def create_recipe():
         return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
     
     if request.form.get("action") == "publish":
-        created_at = datetime.datetime.now().strftime("%d.%m.%Y")
         user_id = queries.get_user_id_by_name(session["username"])
-        recipe_id = queries.add_recipe(title, ingredients, instructions, tags, created_at, user_id)
+        recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])

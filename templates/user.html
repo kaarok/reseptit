@@ -12,12 +12,13 @@
 <div class="item">
   <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
   <p>
-    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
+    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at | format_date }}
   </p>
 </div>
 {% endfor %}
 </div>
 
+{% if page_count > 1 %}
 <div class="header">
   {% if page > 1 %}
   <a href="{{ url_for('show_user', user_id=user_id, page=page - 1) }}"><button>Edellinen</button></a>
@@ -27,4 +28,5 @@
   <a href="{{ url_for('show_user', user_id=user_id, page=page + 1) }}"><button>Seuraava</button></a>
   {% endif %}
 </div>
+{% endif %}
 {% endblock %}

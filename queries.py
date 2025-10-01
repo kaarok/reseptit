@@ -1,6 +1,9 @@
-import db
 import math
+import datetime
+
 import config
+import db
+
 
 # --------------------
 # USERS
@@ -24,7 +27,8 @@ def get_password_hash(username):
 # --------------------
 # RECIPES
 # --------------------
-def add_recipe(title, ingredients, instructions, tags, created_at, user_id):
+def add_recipe(title, ingredients, instructions, tags, user_id):
+    created_at = datetime.datetime.now()
     sql = "INSERT INTO recipes (title, created_at, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, created_at, user_id])
     recipe_id = db.last_insert_id()
@@ -243,7 +247,7 @@ def get_user_reviews(user_id):
 # --------------------
 # SEARCH
 # --------------------
-def get_search(query, page):
+def get_search_results(query, page):
     sql = """
         SELECT r.id,
                r.title,

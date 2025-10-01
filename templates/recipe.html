@@ -32,7 +32,7 @@
   </ol>
   <br>
   <p><i>{{recipe.username}}</i></p>
-  <p>{{ recipe.created_at }}</p>
+  <p>{{ recipe.created_at | format_date }}</p>
   <br>
   <p>
     {% for tag in tags %}
@@ -67,7 +67,7 @@
     {% endif %}
     <p>{{ r.comment }}</p>
     <p>
-      <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
+      <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at | format_date }}
     </p>
   </div>
   {% endfor %}

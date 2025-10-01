@@ -46,9 +46,11 @@
           </tr>
           {% endfor %}
           <datalist id="tag_options">
+            {% if all_tags %}
             {% for tag in all_tags %}
             <option value="{{ tag }}">
             {% endfor %}
+            {% endif %}
           </datalist>
           <tr>
             <td><button type="submit" name="action" value="tags_add_row">Uusi hakusana</button></td>

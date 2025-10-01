@@ -24,7 +24,7 @@
   <p>Ei arvosteluja</p>
   {% endif %}
   <p>
-    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at }}
+    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at | format_date }}
   </p>
 </div>
 {% endfor %}

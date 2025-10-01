@@ -32,7 +32,7 @@ CREATE TABLE reviews (
     user_id INTEGER REFERENCES users(id),
     rating INTEGER,
     comment TEXT,
-    created_at
+    created_at TEXT
 );
 
 CREATE TABLE tags (
