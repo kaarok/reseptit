@@ -10,13 +10,6 @@ import config
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-@app.template_filter("format_date")
-def format_date(value):
-    if not value:
-        return ""
-    value = datetime.fromisoformat(value)
-    return value.strftime("%d.%m.%Y")
-
 # --------------------
 # HOMEPAGE
 # --------------------
@@ -239,3 +232,13 @@ def create_review(recipe_id):
     created_at = datetime.datetime.now().strftime("%d.%m.%Y")
     queries.add_review(recipe_id, user_id, rating, comment, created_at)
     return redirect("/recipe/" + str(recipe_id))
+
+# --------------------
+# TEMPLATE FILTERS
+# --------------------
+@app.template_filter("format_date")
+def format_date(value):
+    if not value:
+        return ""
+    value = datetime.fromisoformat(value)
+    return value.strftime("%d.%m.%Y")
