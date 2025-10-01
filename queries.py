@@ -127,13 +127,15 @@ def get_recipe(id):
         """
     return db.query(sql, [id])[0]
 
-def update_recipe(recipe_id, title, ingredients, instructions):
+def update_recipe(recipe_id, title, ingredients, instructions, tags):
     sql = "UPDATE recipes SET title = ? WHERE id = ?"
     db.execute(sql, [title, recipe_id])
 
     sql = "DELETE FROM ingredients WHERE recipe_id = ?"
     db.execute(sql, [recipe_id])
     sql = "DELETE FROM instructions WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+    sql = "DELETE FROM recipe_tags WHERE recipe_id = ?"
     db.execute(sql, [recipe_id])
 
     sql = "INSERT INTO ingredients (recipe_id, ingredient) VALUES (?, ?)"
@@ -147,6 +149,13 @@ def update_recipe(recipe_id, title, ingredients, instructions):
         if i != "":
             db.execute(sql, [recipe_id, i, position])
             position += 1
+    
+    for tag in tags:
+        if tag != "":
+            tag = tag.strip().lower()
+            db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", [tag])
+            tag_id = db.query("SELECT id FROM tags WHERE name = ?", [tag])[0]["id"]
+            db.execute("INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)", [recipe_id, tag_id])
 
     return recipe_id
 

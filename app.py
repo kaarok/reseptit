@@ -172,26 +172,35 @@ def show_user(user_id, page=1):
 def edit_recipe(recipe_id):
     form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
+    all_tags = queries.get_all_tags()
+
     if request.method == "GET":
-        title = recipe["title"] if recipe else ""
+        title = recipe["title"]
         ingredients = [r["ingredient"] for r in queries.get_ingredients(recipe_id)]
         instructions = [r["step"] for r in queries.get_instructions(recipe_id)]
-        return render_template("edit.html", form_action=form_action, recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+        tags = [r["name"] for r in queries.get_tags(recipe_id)]
+        return render_template("edit.html", form_action=form_action, recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
 
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
     instructions = request.form.getlist("instruction")
-
+    tags = request.form.getlist("tags")
+    
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
-        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
     
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
-        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions)
+        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+    
+    if request.form.get("action") == "tags_add_row":
+        tags.append("")
+        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+    
     
     if request.form.get("action") == "publish":
-        recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions)
+        recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions, tags=tags)
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
