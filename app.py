@@ -1,8 +1,8 @@
+from datetime import datetime
+
 import sqlite3
 from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
-
-from datetime import datetime
 
 import queries
 import config
@@ -19,7 +19,7 @@ def index(page=1):
     page_count = queries.get_page_count()
 
     if page < 1:
-         return redirect("/1")
+        return redirect("/1")
     if page > page_count:
         return redirect("/" + str(page_count))
 
@@ -36,13 +36,13 @@ def search(page=1):
     query = request.args.get("query")
     if query == "":
         return redirect("/")
-    
+
     results = queries.get_search_results(query, page) if query else []
     result_count = queries.get_search_result_count(query)
     page_count = queries.get_page_count(result_count)
-    
+
     if page < 1:
-         return redirect("/1")
+        return redirect("/1")
     if page > page_count:
         return redirect("/" + str(page_count))
 
@@ -62,10 +62,10 @@ def show_user(user_id, page=1):
 
     page_count = queries.get_page_count(recipe_count)
     if page < 1:
-         return redirect("/user/" + str(user_id))
+        return redirect("/user/" + str(user_id))
     if page > page_count:
         return redirect("/user/" + str(user_id) + "/" + str(page_count))
-    
+
     return render_template("user.html", user_id=user_id, username=username, user_recipes=recipes, user_reviews=reviews, activity=activity, page=page, page_count=page_count)
 
 @app.route("/register")
@@ -79,9 +79,9 @@ def create_user():
     password2 = request.form["password2"]
 
     if len(username) == 0 or len(password1) == 0:
-            session["u_invalid_name_password"] = True
-            return redirect("/register")
-    
+        session["u_invalid_name_password"] = True
+        return redirect("/register")
+
     if password1 != password2:
         session["u_password_not_matching"] = True
         return redirect("/register")
@@ -110,12 +110,11 @@ def login():
         if password_hash == []:
             session["u_user_not_found"] = True
             return redirect("/login")
-        password_hash = password_hash[0][0]
 
         if not check_password_hash(password_hash, password):
             session["u_incorrect_password"] = True
             return redirect("/login")
-        
+
         session["username"] = username
         session["user_id"] = queries.get_user_id_by_name(username)
         return redirect("/")
@@ -135,7 +134,7 @@ def show_recipe(recipe_id):
     instructions = queries.get_instructions(recipe_id)
     tags = queries.get_tags(recipe_id)
     reviews = queries.get_reviews(recipe_id)
-    
+
     return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, tags=tags, reviews=reviews)
 
 @app.route("/new_recipe")
@@ -159,15 +158,15 @@ def create_recipe():
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
         return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
+
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
         return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
+
     if request.form.get("action") == "tags_add_row":
         tags.append("")
         return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
+
     if request.form.get("action") == "publish":
         user_id = queries.get_user_id_by_name(session["username"])
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
@@ -181,29 +180,28 @@ def edit_recipe(recipe_id):
 
     if request.method == "GET":
         title = recipe["title"]
-        ingredients = [r["ingredient"] for r in queries.get_ingredients(recipe_id)]
-        instructions = [r["step"] for r in queries.get_instructions(recipe_id)]
-        tags = [r["name"] for r in queries.get_tags(recipe_id)]
+        ingredients = queries.get_ingredients(recipe_id)
+        instructions = queries.get_instructions(recipe_id)
+        tags = queries.get_tags(recipe_id)
         return render_template("edit.html", form_action=form_action, recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
 
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
     instructions = request.form.getlist("instruction")
     tags = request.form.getlist("tags")
-    
+
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
         return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
+
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
         return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
+
     if request.form.get("action") == "tags_add_row":
         tags.append("")
         return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
-    
-    
+
     if request.form.get("action") == "publish":
         recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions, tags=tags)
         return redirect("/recipe/" + str(recipe_id))
@@ -224,13 +222,13 @@ def delete_recipe(recipe_id):
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
 def create_review(recipe_id):
     rating = request.form["rating"]
+    print(type(rating))
     comment = request.form["comment"].strip()
     if rating == "" and comment == "":
         return redirect("/recipe/" + str(recipe_id))
-    
+
     user_id =   queries.get_user_id_by_name(session["username"])
-    created_at = datetime.datetime.now().strftime("%d.%m.%Y")
-    queries.add_review(recipe_id, user_id, rating, comment, created_at)
+    queries.add_review(recipe_id, user_id, rating, comment)
     return redirect("/recipe/" + str(recipe_id))
 
 # --------------------

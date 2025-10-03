@@ -1,5 +1,5 @@
 import math
-import datetime
+from datetime import datetime
 
 import config
 import db
@@ -8,27 +8,27 @@ import db
 # --------------------
 # USERS
 # --------------------
-def add_user(username, password_hash):
+def add_user(username: str, password_hash: str) -> None:
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
 
-def get_user_id_by_name(username):
+def get_user_id_by_name(username: str) -> int:
     sql = "SELECT id FROM users WHERE username = ?"
     return db.query(sql, [username])[0][0]
 
-def get_username_by_id(id):
+def get_username_by_id(idx: int) -> str:
     sql = "SELECT username FROM users WHERE id = ?"
-    return db.query(sql, [id])[0][0]
+    return db.query(sql, [idx])[0][0]
 
-def get_password_hash(username):
+def get_password_hash(username: str) -> str:
     sql = "SELECT password_hash FROM users WHERE username = ?"
-    return db.query(sql, [username])
+    return db.query(sql, [username])[0][0]
 
 # --------------------
 # RECIPES
 # --------------------
-def add_recipe(title, ingredients, instructions, tags, user_id):
-    created_at = datetime.datetime.now()
+def add_recipe(title: str, ingredients: list, instructions: list, tags: list, user_id: int) -> int:
+    created_at = datetime.now()
     sql = "INSERT INTO recipes (title, created_at, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, created_at, user_id])
     recipe_id = db.last_insert_id()
@@ -37,14 +37,14 @@ def add_recipe(title, ingredients, instructions, tags, user_id):
     for i in ingredients:
         if i != "":
             db.execute(sql, [recipe_id, i])
-    
+
     sql = "INSERT INTO instructions (recipe_id, step, position) VALUES (?, ?, ?)"
     position = 0
     for i in instructions:
         if i != "":
             db.execute(sql, [recipe_id, i, position])
             position += 1
-    
+
     for tag in tags:
         if tag != "":
             tag = tag.strip().lower()
@@ -54,7 +54,7 @@ def add_recipe(title, ingredients, instructions, tags, user_id):
 
     return recipe_id
 
-def update_recipe(recipe_id, title, ingredients, instructions, tags):
+def update_recipe(recipe_id: int, title: str, ingredients: list, instructions: list, tags: list) -> int:
     sql = "UPDATE recipes SET title = ? WHERE id = ?"
     db.execute(sql, [title, recipe_id])
 
@@ -69,14 +69,14 @@ def update_recipe(recipe_id, title, ingredients, instructions, tags):
     for i in ingredients:
         if i != "":
             db.execute(sql, [recipe_id, i])
-    
+
     sql = "INSERT INTO instructions (recipe_id, step, position) VALUES (?, ?, ?)"
     position = 0
     for i in instructions:
         if i != "":
             db.execute(sql, [recipe_id, i, position])
             position += 1
-    
+
     for tag in tags:
         if tag != "":
             tag = tag.strip().lower()
@@ -86,19 +86,19 @@ def update_recipe(recipe_id, title, ingredients, instructions, tags):
 
     return recipe_id
 
-def remove_recipe(recipe_id):
+def remove_recipe(recipe_id: int) -> None:
     sql = "DELETE FROM recipes WHERE id = ?"
     db.execute(sql, [recipe_id])
 
-def get_recipe_count(user_id=None):
+def get_recipe_count(user_id: int = None) -> int:
     if user_id:
         sql = "SELECT COUNT(id) FROM recipes WHERE user_id = ?"
         return db.query(sql, [user_id])[0][0]
-    
+
     sql = "SELECT COUNT(id) FROM recipes"
     return db.query(sql)[0][0]
 
-def get_recipes(page=1):
+def get_recipes(page: int = 1) -> list[dict]:
     limit = config.page_size
     offset = limit * (page - 1)
     sql = """
@@ -118,9 +118,10 @@ def get_recipes(page=1):
         ORDER BY r.created_at DESC
         LIMIT ? OFFSET ?
         """
-    return db.query(sql, [limit, offset])
+    result = db.query(sql, [limit, offset])
+    return sql_rows_to_dicts(result)
 
-def get_user_recipes(user_id, page=1):
+def get_user_recipes(user_id: int, page: int = 1) -> list[dict]:
     limit = config.page_size
     offset = limit * (page - 1)
     sql = """
@@ -141,9 +142,10 @@ def get_user_recipes(user_id, page=1):
         ORDER BY r.created_at DESC
         LIMIT ? OFFSET ?
         """
-    return db.query(sql, [user_id, limit, offset])
+    result = db.query(sql, [user_id, limit, offset])
+    return sql_rows_to_dicts(result)
 
-def get_recipe(id):
+def get_recipe(idx: int) -> dict:
     sql = """
         SELECT r.id, 
                r.title, 
@@ -162,56 +164,61 @@ def get_recipe(id):
           LEFT JOIN instructions ins ON ins.recipe_id = r.id
         WHERE r.id = ?
         """
-    return db.query(sql, [id])[0]
+    result = db.query(sql, [idx])
+    return sql_rows_to_dicts(result)[0]
 
 # --------------------
 # INGREDIENTS
 # --------------------
-def get_ingredients(recipe_id):
+def get_ingredients(recipe_id: int) -> list[str]:
     sql = """
         SELECT i.ingredient
         FROM ingredients i
         WHERE i.recipe_id = ?
         """
-    return db.query(sql, [recipe_id])
+    result = db.query(sql, [recipe_id])
+    return sql_col_to_list(result, "ingredient")
 
 # --------------------
 # INSTRUCTIONS
 # --------------------
-def get_instructions(recipe_id):
+def get_instructions(recipe_id: int) -> list[str]:
     sql = """
         SELECT i.step, i.position
         FROM instructions i
         WHERE i.recipe_id = ?
         ORDER BY i.position
         """
-    return db.query(sql, [recipe_id])
+    result = db.query(sql, [recipe_id])
+    return sql_col_to_list(result, "step")
 
 # --------------------
 # TAGS
 # --------------------
-def get_tags(recipe_id):
+def get_tags(recipe_id: int) -> list[str]:
     sql = """
         SELECT t.name
         FROM recipe_tags rt
           LEFT JOIN tags t ON t.id = rt.tag_id
         WHERE rt.recipe_id = ?
         """
-    return db.query(sql, [recipe_id])
+    result = db.query(sql, [recipe_id])
+    return sql_col_to_list(result, "name")
 
-def get_all_tags():
+def get_all_tags() -> list[str]:
     sql = "SELECT name FROM tags"
-    tags = db.query(sql)
-    if not tags:
+    result = db.query(sql)
+    if not result:
         return None
-    return [tag["name"] for tag in tags]
+    return sql_col_to_list(result, "name")
 
 # --------------------
 # REVIEWS
 # --------------------
-def add_review(recipe_id, user_id, rating, comment, created_at):
-    if rating == None and comment == None:
+def add_review(recipe_id: int, user_id: int, rating: str, comment: str) -> None:
+    if rating is None and comment is None:
         return None
+    created_at = datetime.now()
     sql = "INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)"
     db.execute(sql, [recipe_id, user_id, rating, comment, created_at])
 
@@ -224,30 +231,33 @@ def add_review(recipe_id, user_id, rating, comment, created_at):
             """
         db.execute(sql, [rating, recipe_id])
 
-def get_reviews(recipe_id):
+def get_reviews(recipe_id: int) -> list[dict]:
     sql = """
-        SELECT r.id, r.rating, r.comment, r.created_at, u.username
+        SELECT r.id, r.rating, r.comment, r.created_at, r.user_id, u.username
         FROM reviews r
         LEFT JOIN users u ON u.id = r.user_id
         WHERE r.recipe_id = ?
         ORDER BY r.created_at DESC
         """
-    return db.query(sql, [recipe_id])
+    result = db.query(sql, [recipe_id])
+    return sql_rows_to_dicts(result)
 
-def get_user_reviews(user_id):
+
+def get_user_reviews(user_id: int) -> list[dict]:
     sql = """
-        SELECT r.id, r.rating, r.comment, r.created_at, u.username
+        SELECT r.id, r.rating, r.comment, r.created_at, r.user_id, u.username
         FROM reviews r
         LEFT JOIN users u ON u.id = r.user_id
         WHERE r.user_id = ?
         ORDER BY r.created_at DESC
         """
-    return db.query(sql, [user_id])
+    result = db.query(sql, [user_id])
+    return sql_rows_to_dicts(result)
 
 # --------------------
 # SEARCH
 # --------------------
-def get_search_results(query, page):
+def get_search_results(query: str, page: int) -> list[dict]:
     sql = """
         SELECT r.id,
                r.title,
@@ -278,9 +288,10 @@ def get_search_results(query, page):
         """
     offset = (page - 1) * config.page_size
     params = ["%" + query + "%"] * 6 + [config.page_size, offset]
-    return db.query(sql, params)
+    result = db.query(sql, params)
+    return sql_rows_to_dicts(result)
 
-def get_search_result_count(query):
+def get_search_result_count(query: str) -> int:
     sql = """
         SELECT COUNT(DISTINCT r.id)
         FROM recipes r
@@ -291,7 +302,7 @@ def get_search_result_count(query):
           LEFT JOIN tags t ON t.id = rt.tag_id
         WHERE r.title LIKE ? OR ing.ingredient LIKE ? OR ins.step LIKE ? OR u.username LIKE ? OR t.name LIKE ?
         """
-    
+
     params = ["%" + query + "%"] * 5
     count = db.query(sql, params)
     if not count:
@@ -299,10 +310,15 @@ def get_search_result_count(query):
     return count[0][0]
 
 # --------------------
-# PAGES
+# HELPER
 # --------------------
-def get_page_count(recipe_count=get_recipe_count()):
+def get_page_count(recipe_count: int = get_recipe_count()) -> int:
     page_count = math.ceil(recipe_count / config.page_size)
     page_count = max(page_count, 1)
     return page_count
 
+def sql_rows_to_dicts(sql_rows: list) -> list[dict]:
+    return [dict(row) for row in sql_rows]
+
+def sql_col_to_list(sql_rows: list, col_name: str) -> list:
+    return [row[col_name] for row in sql_rows]

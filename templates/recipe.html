@@ -21,13 +21,13 @@
   <table>
     {% for i in ingredients %}
     <tr>
-      <td>{{ i.ingredient }}</td>
+      <td>{{ i }}</td>
     </tr>
     {% endfor %}
   </table>
   <ol>
     {% for i in instructions %}
-    <li>{{ i.step }}</li>
+    <li>{{ i }}</li>
     {% endfor %}
   </ol>
   <br>
@@ -36,7 +36,7 @@
   <br>
   <p>
     {% for tag in tags %}
-    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag.name }}</a>&nbsp;
+    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
     {% endfor %}
   </p>
 </div>
