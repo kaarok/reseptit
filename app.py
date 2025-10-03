@@ -15,7 +15,7 @@ app.secret_key = config.secret_key
 # --------------------
 @app.route("/<int:page>")
 @app.route("/")
-def index(page=1):
+def index(page: int = 1):
     page_count = queries.get_page_count()
 
     if page < 1:
@@ -32,7 +32,7 @@ def index(page=1):
 
 @app.route("/search/<int:page>")
 @app.route("/search")
-def search(page=1):
+def search(page: int = 1):
     query = request.args.get("query")
     if query == "":
         return redirect("/")
@@ -53,7 +53,7 @@ def search(page=1):
 # --------------------
 @app.route("/user/<int:user_id>/<int:page>", methods=["GET"])
 @app.route("/user/<int:user_id>", methods=["GET"])
-def show_user(user_id, page=1):
+def show_user(user_id: int, page: int = 1):
     username = queries.get_username_by_id(user_id)
     recipes = queries.get_user_recipes(user_id, page)
     reviews = queries.get_user_reviews(user_id)
@@ -128,7 +128,7 @@ def logout():
 # RECIPES
 # --------------------
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
-def show_recipe(recipe_id):
+def show_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
@@ -173,7 +173,7 @@ def create_recipe():
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
-def edit_recipe(recipe_id):
+def edit_recipe(recipe_id: int):
     form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
     all_tags = queries.get_all_tags()
@@ -207,7 +207,7 @@ def edit_recipe(recipe_id):
         return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
-def delete_recipe(recipe_id):
+def delete_recipe(recipe_id: int):
     if request.method == "GET":
         recipe = queries.get_recipe(recipe_id)
         return render_template("delete_recipe.html", recipe=recipe)
@@ -220,7 +220,7 @@ def delete_recipe(recipe_id):
 # REVIEWS
 # --------------------
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
-def create_review(recipe_id):
+def create_review(recipe_id: int):
     rating = request.form["rating"]
     print(type(rating))
     comment = request.form["comment"].strip()
@@ -235,8 +235,8 @@ def create_review(recipe_id):
 # TEMPLATE FILTERS
 # --------------------
 @app.template_filter("format_date")
-def format_date(value):
-    if not value:
+def format_date(time: datetime):
+    if not time:
         return ""
-    value = datetime.fromisoformat(value)
-    return value.strftime("%d.%m.%Y")
+    time = datetime.fromisoformat(time)
+    return time.strftime("%d.%m.%Y")
