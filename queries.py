@@ -50,11 +50,20 @@ def add_recipe(title: str, ingredients: list, instructions: list, tags: list, us
             tag = tag.strip().lower()
             db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", [tag])
             tag_id = db.query("SELECT id FROM tags WHERE name = ?", [tag])[0]["id"]
-            db.execute("INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)", [recipe_id, tag_id])
+            db.execute(
+                "INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)",
+                [recipe_id, tag_id]
+                )
 
     return recipe_id
 
-def update_recipe(recipe_id: int, title: str, ingredients: list, instructions: list, tags: list) -> int:
+def update_recipe(
+        recipe_id: int,
+        title: str,
+        ingredients: list,
+        instructions: list,
+        tags: list
+        ) -> int:
     sql = "UPDATE recipes SET title = ? WHERE id = ?"
     db.execute(sql, [title, recipe_id])
 
@@ -82,7 +91,10 @@ def update_recipe(recipe_id: int, title: str, ingredients: list, instructions: l
             tag = tag.strip().lower()
             db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", [tag])
             tag_id = db.query("SELECT id FROM tags WHERE name = ?", [tag])[0]["id"]
-            db.execute("INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)", [recipe_id, tag_id])
+            db.execute(
+                "INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)",
+                [recipe_id, tag_id]
+                )
 
     return recipe_id
 
@@ -219,7 +231,10 @@ def add_review(recipe_id: int, user_id: int, rating: str, comment: str) -> None:
     if rating is None and comment is None:
         return None
     created_at = datetime.now()
-    sql = "INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)"
+    sql = """
+        INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at)
+        VALUES (?, ?, ?, ?, ?)
+        """
     db.execute(sql, [recipe_id, user_id, rating, comment, created_at])
 
     if rating:

@@ -46,7 +46,13 @@ def search(page: int = 1):
     if page > page_count:
         return redirect("/" + str(page_count))
 
-    return render_template("index.html", query=query, results=results, page=page, page_count=page_count)
+    return render_template(
+        "index.html",
+        query=query,
+        results=results,
+        page=page,
+        page_count=page_count
+        )
 
 # --------------------
 # USERS
@@ -66,7 +72,16 @@ def show_user(user_id: int, page: int = 1):
     if page > page_count:
         return redirect("/user/" + str(user_id) + "/" + str(page_count))
 
-    return render_template("user.html", user_id=user_id, username=username, user_recipes=recipes, user_reviews=reviews, activity=activity, page=page, page_count=page_count)
+    return render_template(
+        "user.html",
+        user_id=user_id,
+        username=username,
+        user_recipes=recipes,
+        user_reviews=reviews,
+        activity=activity,
+        page=page,
+        page_count=page_count
+        )
 
 @app.route("/register")
 def register():
@@ -135,7 +150,14 @@ def show_recipe(recipe_id: int):
     tags = queries.get_tags(recipe_id)
     reviews = queries.get_reviews(recipe_id)
 
-    return render_template("recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, tags=tags, reviews=reviews)
+    return render_template(
+        "recipe.html",
+        recipe=recipe,
+        ingredients=ingredients,
+        instructions=instructions,
+        tags=tags,
+        reviews=reviews
+        )
 
 @app.route("/new_recipe")
 def new_recipe():
@@ -145,7 +167,14 @@ def new_recipe():
     tags = [""]
     all_tags = queries.get_all_tags()
 
-    return render_template("new_recipe.html", form_action=form_action, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+    return render_template(
+        "new_recipe.html",
+        form_action=form_action,
+        ingredients=ingredients,
+        instructions=instructions,
+        tags=tags,
+        all_tags=all_tags
+        )
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
@@ -157,15 +186,36 @@ def create_recipe():
 
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "new_recipe.html",
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "new_recipe.html",
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "tags_add_row":
         tags.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "new_recipe.html",
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "publish":
         user_id = queries.get_user_id_by_name(session["username"])
@@ -183,7 +233,16 @@ def edit_recipe(recipe_id: int):
         ingredients = queries.get_ingredients(recipe_id)
         instructions = queries.get_instructions(recipe_id)
         tags = queries.get_tags(recipe_id)
-        return render_template("edit.html", form_action=form_action, recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "edit.html",
+            form_action=form_action,
+            recipe=recipe,
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
@@ -192,15 +251,39 @@ def edit_recipe(recipe_id: int):
 
     if request.form.get("action") == "ingredients_add_row":
         ingredients.append("")
-        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "edit.html",
+            recipe=recipe,
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "instructions_add_row":
         instructions.append("")
-        return render_template("edit.html", recipe=recipe, title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "edit.html",
+            recipe=recipe,
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "tags_add_row":
         tags.append("")
-        return render_template("new_recipe.html", title=title, ingredients=ingredients, instructions=instructions, tags=tags, all_tags=all_tags)
+        return render_template(
+            "edit.html",
+            recipe=recipe,
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
 
     if request.form.get("action") == "publish":
         recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions, tags=tags)
