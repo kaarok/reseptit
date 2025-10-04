@@ -240,6 +240,16 @@ def create_recipe():
             )
 
     if request.form.get("action") == "publish":
+        if title.strip() == "":
+            flash("*reseptin nimi on pakollinen")
+            return render_template(
+                "new_recipe.html",
+                title=title,
+                ingredients=ingredients,
+                instructions=instructions,
+                tags=tags,
+                all_tags=all_tags
+                )
         user_id = queries.get_user_id_by_name(session["username"])
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
         return redirect("/recipe/" + str(recipe_id))
@@ -348,6 +358,7 @@ def create_review(recipe_id: int):
     print(type(rating))
     comment = request.form["comment"].strip()
     if rating == "" and comment == "":
+        flash("*arvostelulla täytyy olla arvosana tai kommentti")
         return redirect("/recipe/" + str(recipe_id))
 
     user_id =   queries.get_user_id_by_name(session["username"])

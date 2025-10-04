@@ -16,6 +16,9 @@
     </div>
     <div class="item">
       <form action="{{ form_action }}" method="POST">
+        {% for message in get_flashed_messages() %}
+        <p class="error">{{ message }}</p>
+        {% endfor %}
         <p>
           Reseptin nimi:
           <input type="text" name="title" value="{{ title }}" class="textbox"/>

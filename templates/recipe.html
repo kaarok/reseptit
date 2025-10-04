@@ -47,6 +47,9 @@
 <div class="content">
   {% if session.username %}
   <div class="item">
+    {% for message in get_flashed_messages() %}
+    <p class="error">{{ message }}</p>
+    {% endfor %}
     <form action="/create_review/{{ recipe.id }}" method="POST">
       <p>
         <label for="rating">Arvosana:</label>
