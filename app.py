@@ -94,15 +94,9 @@ def create_user():
     username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    check_user_valid(username, password1)
 
     error = False
-    if len(username) == 0:
-        flash("*käyttäjätunnus on pakollinen")
-        error = True
-    if len(password1) == 0:
-        flash("*salasana on pakollinen")
-        error = True
-
     if password1 != password2:
         flash("*kaksi eri salasanaa annettu")
         error = True
@@ -175,7 +169,7 @@ def logout():
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
 def show_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
-    check_recipe(recipe)
+    check_if_found(recipe)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
     tags = queries.get_tags(recipe_id)
@@ -249,16 +243,7 @@ def create_recipe():
             )
 
     if request.form.get("action") == "publish":
-        if title.strip() == "":
-            flash("*reseptin nimi on pakollinen")
-            return render_template(
-                "new_recipe.html",
-                title=title,
-                ingredients=ingredients,
-                instructions=instructions,
-                tags=tags,
-                all_tags=all_tags
-                )
+        check_recipe_valid(title, ingredients, instructions, tags)
         user_id = queries.get_user_id_by_name(session["username"])
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
         return redirect("/recipe/" + str(recipe_id))
@@ -276,7 +261,7 @@ def create_recipe():
 def edit_recipe(recipe_id: int):
     form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
-    check_recipe(recipe)
+    check_if_found(recipe)
     check_user_id(recipe["user_id"])
     all_tags = queries.get_all_tags()
 
@@ -354,7 +339,7 @@ def edit_recipe(recipe_id: int):
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
-    check_recipe(recipe)
+    check_if_found(recipe)
     check_user_id(recipe["user_id"])
     if request.method == "GET":
         return render_template("delete_recipe.html", recipe=recipe)
@@ -385,9 +370,32 @@ def check_user_id(allowed_id: int) -> None:
     if session["user_id"] != allowed_id:
         abort(403)
 
-def check_recipe(recipe: dict) -> None:
-    if not recipe:
+def check_if_found(item: dict) -> None:
+    if not item:
         abort(404)
+def check_user_valid(username: str, password: str):
+    if len(username) < config.USERNAME_LENGTH[0] or len(username) > config.USERNAME_LENGTH[1]:
+        abort(403)
+    if len(password) < config.PASSWORD_LENGTH[0] or len(password) > config.PASSWORD_LENGTH[1]:
+        abort(403)
+
+def check_recipe_valid(
+        title: str,
+        ingredients: list,
+        instructions: list,
+        tags: list
+        ) -> None:
+    if len(title) < config.RECIPE_TITLE_LENGTH[0] or len(title) > config.RECIPE_TITLE_LENGTH[1]:
+        abort(403)
+    for i in ingredients:
+        if len(i) < config.INGREDIENT_LENGTH[0] or len(i) > config.INGREDIENT_LENGTH[1]:
+            abort(403)
+    for i in instructions:
+        if len(i) < config.INSTRUCTION_LENGTH[0] or len(i) > config.INSTRUCTION_LENGTH[1]:
+            abort(403)
+    for i in tags:
+        if len(i) < config.TAG_LENGTH[0] or len(i) > config.TAG_LENGTH[1]:
+            abort(403)
 
 @app.template_filter("format_date")
 def format_date(time: datetime):
