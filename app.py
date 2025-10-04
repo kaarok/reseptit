@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import sqlite3
-from flask import Flask, redirect, render_template, flash, request, session
+from flask import Flask, redirect, render_template, flash, abort, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import queries
@@ -267,6 +267,7 @@ def create_recipe():
 def edit_recipe(recipe_id: int):
     form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
+    check_user_id(recipe["user_id"])
     all_tags = queries.get_all_tags()
 
     if request.method == "GET":
@@ -342,8 +343,9 @@ def edit_recipe(recipe_id: int):
 
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id: int):
+    recipe = queries.get_recipe(recipe_id)
+    check_user_id(recipe["user_id"])
     if request.method == "GET":
-        recipe = queries.get_recipe(recipe_id)
         return render_template("delete_recipe.html", recipe=recipe)
 
     queries.remove_recipe(recipe_id)
@@ -366,8 +368,12 @@ def create_review(recipe_id: int):
     return redirect("/recipe/" + str(recipe_id))
 
 # --------------------
-# TEMPLATE FILTERS
+# HELPER
 # --------------------
+def check_user_id(allowed_id):
+    if session["user_id"] != allowed_id:
+        abort(403)
+
 @app.template_filter("format_date")
 def format_date(time: datetime):
     if not time:
