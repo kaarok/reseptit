@@ -18,11 +18,29 @@
       <form action="/login" method="post">
         <p>
           Tunnus: <br />
-          <input type="text" name="username" value="{{ username }}" class="textbox" autofocus/>
+          <input 
+            type="text" 
+            name="username" 
+            value="{{ username }}" 
+            class="textbox"
+            size="{{ config['USERNAME_LENGTH'][1]}}"
+            minlength="{{ config['USERNAME_LENGTH'][0]}}"
+            maxlength="{{ config['USERNAME_LENGTH'][1]}}"
+            autofocus
+            required
+          />
         </p>
         <p>
           Salasana: <br />
-          <input type="password" name="password" class="textbox"/>
+          <input 
+            type="password" 
+            name="password" 
+            class="textbox"
+            size="{{ config['USERNAME_LENGTH'][1]}}"
+            minlength="{{ config['PASSWORD_LENGTH'][0]}}"
+            maxlength="{{ config['PASSWORD_LENGTH'][1]}}"
+            required
+          />
         </p>
         {% for message in get_flashed_messages() %}
         <p class="error">{{ message }}</p>

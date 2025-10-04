@@ -17,16 +17,44 @@
     <div class="item">
       <form action="/create_user" method="post">
         <p>
-          Tunnus: <br />
-          <input type="text" name="username" class="textbox" value="{{ username }}" autofocus />
+          Käyttäjätunnus: <br />
+          <input 
+            type="text" 
+            name="username" 
+            class="textbox" 
+            value="{{ username }}"
+            size="{{ config['USERNAME_LENGTH'][1]}}"
+            minlength="{{ config['USERNAME_LENGTH'][0]}}"
+            maxlength="{{ config['USERNAME_LENGTH'][1]}}"
+            required
+            autofocus 
+          />
         </p>
         <p>
           Salasana: <br />
-          <input type="password" name="password1" class="textbox" value="{{ password1 }}" />
+          <input 
+            type="password" 
+            name="password1" 
+            class="textbox" 
+            value="{{ password1 }}" 
+            size="{{ config['USERNAME_LENGTH'][1]}}"
+            minlength="{{ config['PASSWORD_LENGTH'][0]}}"
+            maxlength="{{ config['PASSWORD_LENGTH'][1]}}"
+            required
+          />
         </p>
         <p>
           Salasana uudestaan: <br />
-          <input type="password" name="password2" class="textbox" value="{{ password2 }}" />
+          <input 
+            type="password" 
+            name="password2" 
+            class="textbox" 
+            value="{{ password2 }}" 
+            size="{{ config['USERNAME_LENGTH'][1]}}"
+            minlength="{{ config['PASSWORD_LENGTH'][0]}}"
+            maxlength="{{ config['PASSWORD_LENGTH'][1]}}"
+            required
+          />
         </p>
         {% for message in get_flashed_messages() %}
         <p class="error">{{ message }}</p>

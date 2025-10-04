@@ -9,6 +9,7 @@ import config
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+app.config.from_object(config)
 
 # --------------------
 # HOMEPAGE
@@ -96,7 +97,7 @@ def create_user():
 
     error = False
     if len(username) == 0:
-        flash("*käyttäjänimi on pakollinen")
+        flash("*käyttäjätunnus on pakollinen")
         error = True
     if len(password1) == 0:
         flash("*salasana on pakollinen")
@@ -111,7 +112,7 @@ def create_user():
     try:
         queries.add_user(username, password_hash)
     except sqlite3.IntegrityError:
-        flash("*käyttäjänimi on varattu")
+        flash("*käyttäjätunnus on varattu")
         error = True
 
     if error:
@@ -128,13 +129,15 @@ def create_user():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if session["username"]:
-        return redirect("/")
-    if request.method == "GET":
-        return render_template(
-            "login.html",
-            username=""
-            )
+    try:
+        if session["username"]:
+            return redirect("/")
+    except KeyError:
+        if request.method == "GET":
+            return render_template(
+                "login.html",
+                username=""
+                )
 
     username = request.form["username"]
     password = request.form["password"]
@@ -160,9 +163,11 @@ def login():
 
 @app.route("/logout")
 def logout():
-    if session["username"]:
+    try:
         del session["username"]
-    return redirect("/")
+        return redirect("/")
+    except KeyError:
+        return redirect("/")
 
 # --------------------
 # RECIPES
@@ -376,11 +381,11 @@ def create_review(recipe_id: int):
 # --------------------
 # HELPER
 # --------------------
-def check_user_id(allowed_id):
+def check_user_id(allowed_id: int) -> None:
     if session["user_id"] != allowed_id:
         abort(403)
 
-def check_recipe(recipe):
+def check_recipe(recipe: dict) -> None:
     if not recipe:
         abort(404)
 

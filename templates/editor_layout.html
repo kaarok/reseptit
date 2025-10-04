@@ -21,31 +21,91 @@
         {% endfor %}
         <p>
           Reseptin nimi:
-          <input type="text" name="title" value="{{ title }}" class="textbox"/>
+          <br>
+          <input 
+            type="text" 
+            name="title" 
+            value="{{ title }}" 
+            class="textbox"
+            size="{{ config['RECIPE_TITLE_LENGTH'][1] }}"
+            minlength="{{ config['RECIPE_TITLE_LENGTH'][0] }}" 
+            maxlength="{{ config['RECIPE_TITLE_LENGTH'][1] }}" 
+            required
+          />
         </p>
+        <br><br>
         <table>
           Ainesosat:
           {% for i in ingredients %}
           <tr>
-            <td><input type="text" name="ingredient" value="{{ i }}" class="textbox"></td>
+            <td>
+              <input 
+                type="text" 
+                name="ingredient" 
+                value="{{ i }}" 
+                class="textbox"
+                size="{{ config['INGREDIENT_LENGTH'][1] }}"
+                minlength="{{ config['INGREDIENT_LENGTH'][0] }}" 
+                maxlength="{{ config['INGREDIENT_LENGTH'][1] }}"
+              />
+            </td>
           </tr>
           {% endfor %}
           <tr>
-            <td><button type="submit" name="action" value="ingredients_add_row">Uusi ainesosa</button></td>
+            <td>
+              <button 
+                type="submit" 
+                name="action" 
+                value="ingredients_add_row"
+              >Uusi ainesosa</button>
+            </td>
           </tr>
         </table>
-        <ol>
+        <br><br>
+        <table>
           Ohjeet:
           {% for i in instructions %}
-          <li><br><textarea type="text" name="instruction" class="textbox" cols="50" rows="4">{{ i }}</textarea></li>
+          <tr>
+            <td>
+              <textarea 
+                type="text" 
+                name="instruction" 
+                class="textbox" 
+                cols="{{ config['INGREDIENT_LENGTH'][1] }}"
+                rows="5" 
+                minlength="{{ config['INSTRUCTION_LENGTH'][0] }}"
+                maxlength="{{ config['INSTRUCTION_LENGTH'][1] }}"
+              >{{ i }}</textarea>
+            </td>
+          </tr>
           {% endfor %}
-          <li><button type="submit" name="action" value="instructions_add_row">Uusi ohje</button></li>
-        </ol>
+          <tr>
+            <td>
+              <button 
+                type="submit" 
+                name="action" 
+                value="instructions_add_row"
+              >Uusi ohje</button>
+            </td>
+          </tr>
+        </table>
+        <br><br>
         <table>
           Hakusanat:
           {% for tag in tags %}
           <tr>
-            <td><input type="text" name="tags" value="{{ tag }}" class="textbox" list="tag_options"></td>
+            <td>
+              <input 
+                type="text" 
+                name="tags" 
+                value="{{ tag }}" 
+                class="textbox" 
+                list="tag_options" 
+                size="{{ config['TAG_LENGTH'][1] }}"
+                minlength="{{ config['TAG_LENGTH'][0] }}"
+                maxlength="{{ config['TAG_LENGTH'][1] }}"
+              />
+            </td>
           </tr>
           {% endfor %}
           <datalist id="tag_options">
@@ -56,11 +116,21 @@
             {% endif %}
           </datalist>
           <tr>
-            <td><button type="submit" name="action" value="tags_add_row">Uusi hakusana</button></td>
+            <td>
+              <button 
+                type="submit" 
+                name="action" 
+                value="tags_add_row"
+              >Uusi hakusana</button>
+            </td>
           </tr>
         </table>
         <br><br><br>
-        <button type="submit" name="action" value="publish">Tallenna</button>
+        <button 
+          type="submit" 
+          name="action" 
+          value="publish"
+        >Tallenna</button>
       </form>
       {% block actions %}
       {% endblock %}
