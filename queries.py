@@ -111,7 +111,7 @@ def get_recipe_count(user_id: int = None) -> int:
     return db.query(sql)[0][0]
 
 def get_recipes(page: int = 1) -> list[dict]:
-    limit = config.page_size
+    limit = config.PAGE_SIZE
     offset = limit * (page - 1)
     sql = """
         SELECT r.id,
@@ -134,7 +134,7 @@ def get_recipes(page: int = 1) -> list[dict]:
     return sql_rows_to_dicts(result)
 
 def get_user_recipes(user_id: int, page: int = 1) -> list[dict]:
-    limit = config.page_size
+    limit = config.PAGE_SIZE
     offset = limit * (page - 1)
     sql = """
         SELECT r.id,
@@ -229,7 +229,7 @@ def get_all_tags() -> list[str]:
 # --------------------
 def add_review(recipe_id: int, user_id: int, rating: str, comment: str) -> None:
     if rating is None and comment is None:
-        return None
+        return
     created_at = datetime.now()
     sql = """
         INSERT INTO reviews (recipe_id, user_id, rating, comment, created_at)
@@ -256,7 +256,6 @@ def get_reviews(recipe_id: int) -> list[dict]:
         """
     result = db.query(sql, [recipe_id])
     return sql_rows_to_dicts(result)
-
 
 def get_user_reviews(user_id: int) -> list[dict]:
     sql = """
@@ -301,8 +300,8 @@ def get_search_results(query: str, page: int) -> list[dict]:
         r.created_at DESC
         LIMIT ? OFFSET ?
         """
-    offset = (page - 1) * config.page_size
-    params = ["%" + query + "%"] * 6 + [config.page_size, offset]
+    offset = (page - 1) * config.PAGE_SIZE
+    params = ["%" + query + "%"] * 6 + [config.PAGE_SIZE, offset]
     result = db.query(sql, params)
     return sql_rows_to_dicts(result)
 
@@ -328,7 +327,7 @@ def get_search_result_count(query: str) -> int:
 # HELPER
 # --------------------
 def get_page_count(recipe_count: int = get_recipe_count()) -> int:
-    page_count = math.ceil(recipe_count / config.page_size)
+    page_count = math.ceil(recipe_count / config.PAGE_SIZE)
     page_count = max(page_count, 1)
     return page_count
 
