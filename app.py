@@ -8,7 +8,7 @@ import queries
 import config
 
 app = Flask(__name__)
-app.secret_key = config.secret_key
+app.secret_key = config.SECRET_KEY
 
 # --------------------
 # HOMEPAGE
@@ -117,22 +117,21 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    username = request.form["username"]
+    password = request.form["password"]
 
-        password_hash = queries.get_password_hash(username)
-        if password_hash == []:
-            session["u_user_not_found"] = True
-            return redirect("/login")
+    password_hash = queries.get_password_hash(username)
+    if password_hash == []:
+        session["u_user_not_found"] = True
+        return redirect("/login")
 
-        if not check_password_hash(password_hash, password):
-            session["u_incorrect_password"] = True
-            return redirect("/login")
+    if not check_password_hash(password_hash, password):
+        session["u_incorrect_password"] = True
+        return redirect("/login")
 
-        session["username"] = username
-        session["user_id"] = queries.get_user_id_by_name(username)
-        return redirect("/")
+    session["username"] = username
+    session["user_id"] = queries.get_user_id_by_name(username)
+    return redirect("/")
 
 @app.route("/logout")
 def logout():
@@ -222,6 +221,15 @@ def create_recipe():
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
         return redirect("/recipe/" + str(recipe_id))
 
+    return render_template(
+            "new_recipe.html",
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
+
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id: int):
     form_action = "/edit/" + str(recipe_id)
@@ -289,15 +297,24 @@ def edit_recipe(recipe_id: int):
         recipe_id = queries.update_recipe(recipe_id, title, ingredients, instructions, tags=tags)
         return redirect("/recipe/" + str(recipe_id))
 
+    return render_template(
+            "edit.html",
+            recipe=recipe,
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            tags=tags,
+            all_tags=all_tags
+            )
+
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id: int):
     if request.method == "GET":
         recipe = queries.get_recipe(recipe_id)
         return render_template("delete_recipe.html", recipe=recipe)
 
-    if request.method == "POST":
-        queries.remove_recipe(recipe_id)
-        return redirect("/")
+    queries.remove_recipe(recipe_id)
+    return redirect("/")
 
 # --------------------
 # REVIEWS
