@@ -128,6 +128,8 @@ def create_user():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if session["username"]:
+        return redirect("/")
     if request.method == "GET":
         return render_template(
             "login.html",
@@ -158,7 +160,8 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    if session["username"]:
+        del session["username"]
     return redirect("/")
 
 # --------------------
@@ -167,6 +170,7 @@ def logout():
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
 def show_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
+    check_recipe(recipe)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
     tags = queries.get_tags(recipe_id)
@@ -267,6 +271,7 @@ def create_recipe():
 def edit_recipe(recipe_id: int):
     form_action = "/edit/" + str(recipe_id)
     recipe = queries.get_recipe(recipe_id)
+    check_recipe(recipe)
     check_user_id(recipe["user_id"])
     all_tags = queries.get_all_tags()
 
@@ -344,6 +349,7 @@ def edit_recipe(recipe_id: int):
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
+    check_recipe(recipe)
     check_user_id(recipe["user_id"])
     if request.method == "GET":
         return render_template("delete_recipe.html", recipe=recipe)
@@ -373,6 +379,10 @@ def create_review(recipe_id: int):
 def check_user_id(allowed_id):
     if session["user_id"] != allowed_id:
         abort(403)
+
+def check_recipe(recipe):
+    if not recipe:
+        abort(404)
 
 @app.template_filter("format_date")
 def format_date(time: datetime):

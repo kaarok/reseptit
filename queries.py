@@ -16,9 +16,9 @@ def get_user_id_by_name(username: str) -> int:
     sql = "SELECT id FROM users WHERE username = ?"
     return db.query(sql, [username])[0][0]
 
-def get_username_by_id(idx: int) -> str:
+def get_username_by_id(user_id: int) -> str:
     sql = "SELECT username FROM users WHERE id = ?"
-    return db.query(sql, [idx])[0][0]
+    return db.query(sql, [user_id])[0][0]
 
 def get_password_hash(username: str) -> str | None:
     sql = "SELECT password_hash FROM users WHERE username = ?"
@@ -160,7 +160,7 @@ def get_user_recipes(user_id: int, page: int = 1) -> list[dict]:
     result = db.query(sql, [user_id, limit, offset])
     return sql_rows_to_dicts(result)
 
-def get_recipe(idx: int) -> dict:
+def get_recipe(recipe_id: int) -> dict:
     sql = """
         SELECT r.id, 
                r.title, 
@@ -179,7 +179,9 @@ def get_recipe(idx: int) -> dict:
           LEFT JOIN instructions ins ON ins.recipe_id = r.id
         WHERE r.id = ?
         """
-    result = db.query(sql, [idx])
+    result = db.query(sql, [recipe_id])
+    if not result:
+        return None
     return sql_rows_to_dicts(result)[0]
 
 # --------------------
