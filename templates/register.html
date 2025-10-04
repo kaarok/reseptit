@@ -18,34 +18,23 @@
       <form action="/create_user" method="post">
         <p>
           Tunnus: <br />
-          <input type="text" name="username" class="textbox" autofocus />
+          <input type="text" name="username" class="textbox" value="{{ username }}" autofocus />
         </p>
         <p>
           Salasana: <br />
-          <input type="password" name="password1" class="textbox" />
+          <input type="password" name="password1" class="textbox" value="{{ password1 }}" />
         </p>
         <p>
           Salasana uudestaan: <br />
-          <input type="password" name="password2" class="textbox" />
+          <input type="password" name="password2" class="textbox" value="{{ password2 }}" />
         </p>
+        {% for message in get_flashed_messages() %}
+        <p class="error">{{ message }}</p>
+        {% endfor %}
         <button type="submit">Luo tunnus</button>
       </form>
 
-      {% if session.u_password_not_matching %}
-      <p>
-        VIRHE: salasanat eivät ole samat
-      </p>
-      {% endif %}
-      {% if session.u_username_taken %}
-      <p>
-        VIRHE: tunnus on jo varattu
-      </p>
-      {% endif %}
-      {% if session.u_invalid_name_password %}
-      <p>
-        VIRHE: tunnusta tai salasanaa ei annettu
-      </p>
-      {% endif %}
+      
     </div>
   </div>
 </body>

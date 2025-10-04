@@ -20,9 +20,12 @@ def get_username_by_id(idx: int) -> str:
     sql = "SELECT username FROM users WHERE id = ?"
     return db.query(sql, [idx])[0][0]
 
-def get_password_hash(username: str) -> str:
+def get_password_hash(username: str) -> str | None:
     sql = "SELECT password_hash FROM users WHERE username = ?"
-    return db.query(sql, [username])[0][0]
+    result = db.query(sql, [username])
+    if not result:
+        return None
+    return result[0][0]
 
 # --------------------
 # RECIPES

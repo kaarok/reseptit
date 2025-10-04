@@ -95,3 +95,9 @@ h1, h2, h3 {
 
     border-radius: 12px;
 }
+
+.error {
+    color: var(--red);
+    font-size: large;
+    font-weight: bold;
+}

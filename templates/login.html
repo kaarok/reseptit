@@ -18,24 +18,17 @@
       <form action="/login" method="post">
         <p>
           Tunnus: <br />
-          <input type="text" name="username" autofocus class="textbox"/>
+          <input type="text" name="username" value="{{ username }}" class="textbox" autofocus/>
         </p>
         <p>
           Salasana: <br />
           <input type="password" name="password" class="textbox"/>
         </p>
+        {% for message in get_flashed_messages() %}
+        <p class="error">{{ message }}</p>
+        {% endfor %}
         <button type="submit">Kirjaudu</button>
       </form>
-      {% if session.u_incorrect_password %}
-      <p>
-        VIRHE: väärä salasana
-      </p>
-      {% endif %}
-      {% if session.u_user_not_found %}
-      <p>
-        VIRHE: käyttäjää ei löydetty
-      </p>
-      {% endif %}
     </div>
   </div>
 </body>

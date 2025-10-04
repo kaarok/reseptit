@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import sqlite3
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, flash, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import queries
@@ -22,10 +22,6 @@ def index(page: int = 1):
         return redirect("/1")
     if page > page_count:
         return redirect("/" + str(page_count))
-
-    for key in list(session.keys()):
-        if key.startswith("u_"):
-            session.pop(key)
 
     results = queries.get_recipes(page)
     return render_template("index.html", results=results, page=page, page_count=page_count)
@@ -85,28 +81,46 @@ def show_user(user_id: int, page: int = 1):
 
 @app.route("/register")
 def register():
-    return render_template("register.html")
+    return render_template(
+        "register.html",
+        username="",
+        password1="",
+        password2=""
+        )
 
 @app.route("/create_user", methods=["POST"])
 def create_user():
-    username = request.form["username"]
+    username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
-    if len(username) == 0 or len(password1) == 0:
-        session["u_invalid_name_password"] = True
-        return redirect("/register")
+    error = False
+    if len(username) == 0:
+        flash("*käyttäjänimi on pakollinen")
+        error = True
+    if len(password1) == 0:
+        flash("*salasana on pakollinen")
+        error = True
 
     if password1 != password2:
-        session["u_password_not_matching"] = True
-        return redirect("/register")
+        flash("*kaksi eri salasanaa annettu")
+        error = True
+
     password_hash = generate_password_hash(password1)
 
     try:
         queries.add_user(username, password_hash)
     except sqlite3.IntegrityError:
-        session["u_username_taken"] = True
-        return redirect("/register")
+        flash("*käyttäjänimi on varattu")
+        error = True
+
+    if error:
+        return render_template(
+            "register.html",
+            username=username,
+            password1=password1,
+            password2=password2
+            )
 
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
@@ -115,19 +129,28 @@ def create_user():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template(
+            "login.html",
+            username=""
+            )
 
     username = request.form["username"]
     password = request.form["password"]
 
     password_hash = queries.get_password_hash(username)
-    if password_hash == []:
-        session["u_user_not_found"] = True
-        return redirect("/login")
+    if not password_hash:
+        flash("*käyttäjänimeä ei löytynyt")
+        return render_template(
+            "login.html",
+            username=""
+            )
 
     if not check_password_hash(password_hash, password):
-        session["u_incorrect_password"] = True
-        return redirect("/login")
+        flash("*väärä salasana")
+        return render_template(
+            "login.html",
+            username=username
+            )
 
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
