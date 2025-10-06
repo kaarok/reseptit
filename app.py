@@ -1,4 +1,5 @@
 from datetime import datetime
+from secrets import token_hex
 
 import sqlite3
 from flask import Flask, redirect, render_template, flash, abort, request, session
@@ -119,6 +120,7 @@ def create_user():
 
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
+    session["csrf_token"] = token_hex(16)
     return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -153,6 +155,7 @@ def login():
 
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
+    session["csrf_token"] = token_hex(16)
     return redirect("/")
 
 @app.route("/logout")
@@ -203,6 +206,7 @@ def new_recipe():
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
+    check_csrf()
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
     instructions = request.form.getlist("instruction")
@@ -244,18 +248,9 @@ def create_recipe():
 
     if request.form.get("action") == "publish":
         check_recipe_valid(title, ingredients, instructions, tags)
-        user_id = queries.get_user_id_by_name(session["username"])
+        user_id = session["user_id"]
         recipe_id = queries.add_recipe(title, ingredients, instructions, tags, user_id)
         return redirect("/recipe/" + str(recipe_id))
-
-    return render_template(
-            "new_recipe.html",
-            title=title,
-            ingredients=ingredients,
-            instructions=instructions,
-            tags=tags,
-            all_tags=all_tags
-            )
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id: int):
@@ -281,6 +276,7 @@ def edit_recipe(recipe_id: int):
             all_tags=all_tags
             )
 
+    check_csrf()
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
     instructions = request.form.getlist("instruction")
@@ -339,6 +335,7 @@ def edit_recipe(recipe_id: int):
 @app.route("/delete/<int:recipe_id>", methods=["GET", "POST"])
 def delete_recipe(recipe_id: int):
     recipe = queries.get_recipe(recipe_id)
+    check_csrf()
     check_if_found(recipe)
     check_user_id(recipe["user_id"])
     if request.method == "GET":
@@ -352,6 +349,7 @@ def delete_recipe(recipe_id: int):
 # --------------------
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
 def create_review(recipe_id: int):
+    check_csrf()
     rating = request.form["rating"]
     print(type(rating))
     comment = request.form["comment"].strip()
@@ -366,13 +364,14 @@ def create_review(recipe_id: int):
 # --------------------
 # HELPER
 # --------------------
-def check_user_id(allowed_id: int) -> None:
+def check_user_id(allowed_id: int):
     if session["user_id"] != allowed_id:
         abort(403)
 
-def check_if_found(item: dict) -> None:
+def check_if_found(item: dict):
     if not item:
         abort(404)
+
 def check_user_valid(username: str, password: str):
     if len(username) < config.USERNAME_LENGTH[0] or len(username) > config.USERNAME_LENGTH[1]:
         abort(403)
@@ -384,18 +383,31 @@ def check_recipe_valid(
         ingredients: list,
         instructions: list,
         tags: list
-        ) -> None:
+        ):
     if len(title) < config.RECIPE_TITLE_LENGTH[0] or len(title) > config.RECIPE_TITLE_LENGTH[1]:
         abort(403)
     for i in ingredients:
+        if i == "":
+            del i
+            continue
         if len(i) < config.INGREDIENT_LENGTH[0] or len(i) > config.INGREDIENT_LENGTH[1]:
             abort(403)
     for i in instructions:
+        if i == "":
+            del i
+            continue
         if len(i) < config.INSTRUCTION_LENGTH[0] or len(i) > config.INSTRUCTION_LENGTH[1]:
             abort(403)
     for i in tags:
+        if i == "":
+            del i
+            continue
         if len(i) < config.TAG_LENGTH[0] or len(i) > config.TAG_LENGTH[1]:
             abort(403)
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
 
 @app.template_filter("format_date")
 def format_date(time: datetime):

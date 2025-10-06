@@ -126,11 +126,12 @@
           </tr>
         </table>
         <br><br><br>
-        <button 
+        <button
           type="submit" 
           name="action" 
           value="publish"
         >Tallenna</button>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       </form>
       {% block actions %}
       {% endblock %}
