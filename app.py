@@ -18,7 +18,7 @@ app.config.from_object(config)
 @app.route("/<int:page>")
 @app.route("/")
 def index(page: int = 1):
-    page_count = queries.get_page_count()
+    page_count = queries.get_page_count(queries.get_recipe_count())
 
     if page < 1:
         return redirect("/1")
@@ -175,14 +175,23 @@ def logout():
 # --------------------
 # RECIPES
 # --------------------
+@app.route("/recipe/<int:recipe_id>/<int:page>", methods=["GET"])
 @app.route("/recipe/<int:recipe_id>", methods=["GET"])
-def show_recipe(recipe_id: int):
+def show_recipe(recipe_id: int, page: int = 1):
     recipe = queries.get_recipe(recipe_id)
     check_if_found(recipe)
     ingredients = queries.get_ingredients(recipe_id)
     instructions = queries.get_instructions(recipe_id)
     tags = queries.get_tags(recipe_id)
-    reviews = queries.get_reviews(recipe_id)
+    review_count = queries.get_review_count(recipe_id)
+
+    page_count = queries.get_page_count(review_count)
+    if page < 1:
+        return redirect("/recipe/" + str(recipe_id))
+    if page > page_count:
+        return redirect("/recipe/" + str(recipe_id) + "/" + str(page_count))
+
+    reviews = queries.get_reviews(recipe_id, page)
 
     return render_template(
         "recipe.html",
@@ -190,7 +199,10 @@ def show_recipe(recipe_id: int):
         ingredients=ingredients,
         instructions=instructions,
         tags=tags,
-        reviews=reviews
+        page=page,
+        page_count=page_count,
+        reviews=reviews,
+        review_count=review_count
         )
 
 @app.route("/new_recipe")

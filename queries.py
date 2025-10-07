@@ -253,16 +253,30 @@ def add_review(recipe_id: int, user_id: int, rating: str, comment: str) -> None:
             """
         db.execute(sql, [rating, recipe_id])
 
-def get_reviews(recipe_id: int) -> list[dict]:
+def get_reviews(recipe_id: int, page: int) -> list[dict]:
+    limit = config.PAGE_SIZE
+    offset = limit * (page - 1)
     sql = """
         SELECT r.id, r.rating, r.comment, r.created_at, r.user_id, u.username
         FROM reviews r
         LEFT JOIN users u ON u.id = r.user_id
         WHERE r.recipe_id = ?
         ORDER BY r.created_at DESC
+        LIMIT ? OFFSET ?
         """
-    result = db.query(sql, [recipe_id])
+    result = db.query(sql, [recipe_id, limit, offset])
     return sql_rows_to_dicts(result)
+
+def get_review_count(recipe_id: int):
+    sql = """
+        SELECT COUNT(DISTINCT id)
+        FROM reviews
+        WHERE recipe_id = ?
+        """
+    count = db.query(sql, [recipe_id])
+    if not count:
+        return None
+    return count[0][0]
 
 def get_user_reviews(user_id: int) -> list[dict]:
     sql = """
@@ -333,8 +347,8 @@ def get_search_result_count(query: str) -> int:
 # --------------------
 # HELPER
 # --------------------
-def get_page_count(recipe_count: int = get_recipe_count()) -> int:
-    page_count = math.ceil(recipe_count / config.PAGE_SIZE)
+def get_page_count(item_count: int) -> int:
+    page_count = math.ceil(item_count / config.PAGE_SIZE)
     page_count = max(page_count, 1)
     return page_count
 
