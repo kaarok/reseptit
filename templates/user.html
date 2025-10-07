@@ -13,7 +13,7 @@
   <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
   <p>
     {% for tag in r.tags %}
-    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
+    <a href="{{ url_for('search', query=tag) }}">#{{ tag }}</a>&nbsp;
     {% endfor %}
   </p>
   {% if r.avg_rating %}
