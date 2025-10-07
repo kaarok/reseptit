@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="header">
-  <h3>{{ recipe.title }}</h3>
+  <h2>{{ recipe.title }}</h2>
   <p>
     {% for tag in tags %}
     <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
@@ -25,7 +25,8 @@
   {% endif %}
 </div>
 <div class="item">
-  <h3>{{ recipe.title }}</h3>
+  <h2>{{ recipe.title }}</h2>
+  <br>
   <table>
     {% for i in ingredients %}
     <tr>
@@ -33,12 +34,13 @@
     </tr>
     {% endfor %}
   </table>
+  <br>
   <ol>
     {% for i in instructions %}
     <li>{{ i }}</li>
+    <br>
     {% endfor %}
   </ol>
-  <br>
   <p><i>{{ recipe.username }}</i></p>
 </div>
 

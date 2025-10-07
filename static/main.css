@@ -86,6 +86,10 @@ h1, h2, h3 {
     margin: 1em;
 }
 
+tr {
+    height: 2em;
+}
+
 .item {
     background-color: var(--white);
     color: var(--black);
