@@ -41,10 +41,24 @@ instructions = [
     ]
 # example recipe source: https://www.k-ruoka.fi/reseptit/liha-makaronilaatikko
 
-tags = random.choices(
-    ["pääruoka", "alkuruoka", "jälkiruoka", "nopea", "helppo", "kana", "gluteeniton", "italialainen", "vegaaninen", "leivonta", "pasta"],
-    k = random.randint(0, 5)
+tags = [
+    "pääruoka",
+    "alkuruoka",
+    "jälkiruoka",
+    "nopea",
+    "helppo",
+    "kana",
+    "gluteeniton",
+    "italialainen",
+    "vegaaninen",
+    "leivonta",
+    "pasta"
+    ]
+for i in tags:
+    db.execute(
+        "INSERT INTO tags (name) VALUES(?)", [i]
     )
+
 created_at = datetime.datetime.now()
 
 
@@ -75,6 +89,12 @@ for recipe in range(1, RECIPE_COUNT + 1):
                 [recipe, i, POSITION]
                 )
             POSITION += 1
+
+    tag_ids = random.choices(range(1, len(tags) + 1), k = random.randint(1, 5))
+    for i in tag_ids:
+        db.execute(
+            "INSERT INTO recipe_tags (recipe_id, tag_id) VALUES(?, ?)", [recipe, i]
+        )
 
 for i in range(1, REVIEW_COUNT + 1):
     recipe_id = random.randint(1, RECIPE_COUNT)
