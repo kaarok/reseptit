@@ -15,7 +15,6 @@
 - Käyttäjä pystyy lisäämään reseptille kuvan.
 - Ulkonäkö/käytettävyys muutoksia:
   - Fontit suuremmiksi monessa kohtaa.
-  - Eri sivuille omat otsikot.
   - Painikkeet selkeämmiksi. (Erottelua tärkeyden mukaan, luettavammat värit/fontit)
   - Käyttäjälle parempi palaute arvostelun lähetyksestä.
 
@@ -34,4 +33,9 @@ $ sqlite3 database.db < schema.sql
 Käynnistä sovellus:
 ```
 $ flask run
+```
+
+Voit myös lisätä esimerkki käyttäjiä ja reseptejä:
+```
+$ python seed.py
 ```
