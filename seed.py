@@ -15,11 +15,36 @@ db.execute("DELETE FROM reviews")
 db.execute("DELETE FROM recipe_tags")
 db.execute("DELETE FROM tags")
 
-USER_COUNT = 1000
-RECIPE_COUNT = 10**5
+USER_COUNT = 100
+RECIPE_COUNT = 10**4
 REVIEW_COUNT = 10**6
-ingredients = []
-instructions = []
+ingredients = [
+    "400 g makaroneja",
+    "400 g naudan jauhelihaa",
+    "1 sipuli",
+    "3/4 tl suolaa",
+    "3/4 tl mustapippuria",
+    "1/4 tl maustepippuria",
+    "2 tl basilikaa",
+    "2 tl timjamia",
+    "2-3 kananmunaa",
+    "7 dl kevytmaitoa",
+    "1 tl suolaa",
+    "2 dl juustoraastetta"
+    ]
+instructions = [
+    "Keitä makaronit pakkauksen ohjeen mukaan, noin 8 minuuttia. Valuta makaronit.",
+    "Hienonna sipuli. Ruskista jauheliha omassa rasvassaan ja lisää sipulit jauhelihan joukkoon.",
+    "Mausta seos suolalla, musta- ja maustepippurilla, basilikalla sekä timjamilla. Kaada jauhelihaseos ja makaronit isoon voideltuun vuokaan (tilavuus noin 3 l).",
+    "Munamaito: Sekoita munamaidon ainekset keskenään ja kaada seos vuokaan.",
+    "Kypsennys: Kypsennä 175-asteisessa uunissa noin 45 minuuttia. Ripottele juustoraaste vuoan pinnalle kypsymisen loppuvaiheessa."
+    ]
+# example recipe source: https://www.k-ruoka.fi/reseptit/liha-makaronilaatikko
+
+tags = random.choices(
+    ["pääruoka", "alkuruoka", "jälkiruoka", "nopea", "helppo", "kana", "gluteeniton", "italialainen", "vegaaninen", "leivonta", "pasta"],
+    k = random.randint(0, 5)
+    )
 created_at = datetime.datetime.now()
 
 
