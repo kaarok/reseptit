@@ -48,13 +48,15 @@ def add_recipe(title: str, ingredients: list, instructions: list, tags: list, us
             db.execute(sql, [recipe_id, i, position])
             position += 1
 
+    all_tags = get_all_tags()
     for tag in tags:
         if tag != "":
             tag = tag.strip().lower()
-            db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", [tag])
+            if tag not in all_tags:
+                db.execute("INSERT INTO tags (name) VALUES (?)", [tag])
             tag_id = db.query("SELECT id FROM tags WHERE name = ?", [tag])[0]["id"]
             db.execute(
-                "INSERT OR IGNORE INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)",
+                "INSERT INTO recipe_tags (recipe_id, tag_id) VALUES (?, ?)",
                 [recipe_id, tag_id]
                 )
 

@@ -26,6 +26,8 @@ def index(page: int = 1):
         return redirect("/" + str(page_count))
 
     results = queries.get_recipes(page)
+    for r in results:
+        r["tags"] = queries.get_tags(r["id"])
     return render_template("index.html", results=results, page=page, page_count=page_count)
 
 @app.route("/search/<int:page>")
@@ -35,7 +37,9 @@ def search(page: int = 1):
     if query == "":
         return redirect("/")
 
-    results = queries.get_search_results(query, page) if query else []
+    results = queries.get_search_results(query, page)
+    for r in results:
+        r["tags"] = queries.get_tags(r["id"])
     result_count = queries.get_search_result_count(query)
     page_count = queries.get_page_count(result_count)
 
@@ -60,6 +64,8 @@ def search(page: int = 1):
 def show_user(user_id: int, page: int = 1):
     username = queries.get_username_by_id(user_id)
     recipes = queries.get_user_recipes(user_id, page)
+    for r in recipes:
+        r["tags"] = queries.get_tags(r["id"])
     reviews = queries.get_user_reviews(user_id)
     recipe_count = queries.get_recipe_count(user_id)
     activity = {"recipe_count": recipe_count, "review_count": len(reviews)}

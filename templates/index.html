@@ -17,14 +17,18 @@
 {% for r in results %}
 <div class="item">
   <h3><a href="/recipe/{{ r.id }}">{{ r.title }}</a></h3>
+  <p>
+    {% for tag in r.tags %}
+    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
+    {% endfor %}
+  </p>
   {% if r.avg_rating %}
-  <p>Arvosana: {{ r.avg_rating }} / 5</p>
-  <p>{{ r.rating_count }} arvostelua</p>
+  <p>{{ r.avg_rating }} / 5 &nbsp;&nbsp;&nbsp; {{ r.rating_count }} arvostelua</p>
   {% else %}
   <p>Ei arvosteluja</p>
   {% endif %}
   <p>
-    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at | format_date }}
+    <a href="/user/{{ r.user_id }}">{{ r.username }}</a> &nbsp; {{ r.created_at | format_date }}
   </p>
 </div>
 {% endfor %}

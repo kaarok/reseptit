@@ -5,12 +5,19 @@
 {% block content %}
 <div class="header">
   <h3>{{ recipe.title }}</h3>
+  <p>
+    {% for tag in tags %}
+    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
+    {% endfor %}
+  </p>
   {% if recipe.avg_rating %}
-  <p>Arvosana: {{ recipe.avg_rating }} / 5</p>
-  <p>{{ recipe.rating_count }} arvostelua</p>
+  <p>{{ recipe.avg_rating }} / 5 &nbsp;&nbsp;&nbsp; {{ recipe.rating_count }} arvostelua</p>
   {% else %}
   <p>Ei arvosteluja</p>
   {% endif %}
+  <p>
+    <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a> &nbsp;&nbsp;&nbsp; {{ recipe.created_at | format_date }}
+  </p>
   {% if session.username == recipe.username %}
   <form action="/edit/{{ recipe.id }}">
     <button type="submit">Muokkaa</button>
@@ -18,6 +25,7 @@
   {% endif %}
 </div>
 <div class="item">
+  <h3>{{ recipe.title }}</h3>
   <table>
     {% for i in ingredients %}
     <tr>
@@ -31,14 +39,7 @@
     {% endfor %}
   </ol>
   <br>
-  <p><i>{{recipe.username}}</i></p>
-  <p>{{ recipe.created_at | format_date }}</p>
-  <br>
-  <p>
-    {% for tag in tags %}
-    <a href="{{ url_for('search', query=tag.name) }}">#{{ tag }}</a>&nbsp;
-    {% endfor %}
-  </p>
+  <p><i>{{ recipe.username }}</i></p>
 </div>
 
 <div class="header">
