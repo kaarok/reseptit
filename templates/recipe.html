@@ -39,7 +39,7 @@
   <br>
   <ol>
     {% for i in instructions %}
-    <li>{{ i }}</li>
+    <li>{{ i | show_lines }}</li>
     <br>
     {% endfor %}
   </ol>
@@ -100,7 +100,7 @@
     {% if r.rating %}
     <p>{{r .rating }} / 5</p>
     {% endif %}
-    <p>{{ r.comment }}</p>
+    <p>{{ r.comment | show_lines }}</p>
     <p>
       <a href="/user/{{ r.user_id }}">{{ r.username }}</a> {{ r.created_at | format_date }}
     </p>

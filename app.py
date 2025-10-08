@@ -4,6 +4,7 @@ from secrets import token_hex
 import sqlite3
 from flask import Flask, redirect, render_template, flash, abort, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
+import markupsafe
 
 import queries
 import config
@@ -385,7 +386,7 @@ def create_review(recipe_id: int):
     return redirect("/recipe/" + str(recipe_id))
 
 # --------------------
-# HELPER
+# HELPERS
 # --------------------
 def require_login():
     if "username" not in session:
@@ -435,6 +436,12 @@ def check_recipe_valid(
 def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 @app.template_filter("format_date")
 def format_date(time: datetime):
