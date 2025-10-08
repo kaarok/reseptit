@@ -5,6 +5,11 @@ import random
 import datetime
 from werkzeug.security import generate_password_hash
 
+
+USER_COUNT = 100
+RECIPE_COUNT = 10**4
+REVIEW_COUNT = 10**6
+
 db = sqlite3.connect("database.db")
 
 db.execute("DELETE FROM users")
@@ -15,9 +20,8 @@ db.execute("DELETE FROM reviews")
 db.execute("DELETE FROM recipe_tags")
 db.execute("DELETE FROM tags")
 
-USER_COUNT = 100
-RECIPE_COUNT = 10**4
-REVIEW_COUNT = 10**6
+
+
 ingredients = [
     "400 g makaroneja",
     "400 g naudan jauhelihaa",
