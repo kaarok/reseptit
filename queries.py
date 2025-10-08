@@ -228,7 +228,7 @@ def get_all_tags() -> list[str]:
     sql = "SELECT name FROM tags"
     result = db.query(sql)
     if not result:
-        return None
+        return []
     return sql_col_to_list(result, "name")
 
 # --------------------
