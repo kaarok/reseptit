@@ -168,6 +168,8 @@ def login():
 def logout():
     try:
         del session["username"]
+        del session["user_id"]
+        del session["csrf_token"]
         return redirect("/")
     except KeyError:
         return redirect("/")
@@ -207,6 +209,7 @@ def show_recipe(recipe_id: int, page: int = 1):
 
 @app.route("/new_recipe")
 def new_recipe():
+    require_login()
     form_action = "/create_recipe"
     ingredients = [""]
     instructions = [""]
@@ -224,6 +227,7 @@ def new_recipe():
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
+    require_login()
     check_csrf()
     title = request.form.get("title")
     ingredients = request.form.getlist("ingredient")
@@ -367,6 +371,7 @@ def delete_recipe(recipe_id: int):
 # --------------------
 @app.route("/create_review/<int:recipe_id>", methods=["POST"])
 def create_review(recipe_id: int):
+    require_login()
     check_csrf()
     rating = request.form["rating"]
     print(type(rating))
@@ -382,6 +387,10 @@ def create_review(recipe_id: int):
 # --------------------
 # HELPER
 # --------------------
+def require_login():
+    if "username" not in session:
+        abort(403)
+
 def check_user_id(allowed_id: int):
     if session["user_id"] != allowed_id:
         abort(403)
