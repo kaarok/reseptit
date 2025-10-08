@@ -5,8 +5,8 @@
 {% block content %}
 <div class="header">
     <h2>{{ username }}</h2>
-    <p>{{ activity.recipe_count }} reseptiä</p>
-    <p>{{ activity.review_count }} arvostelua</p>
+    <p><a href="/user/{{ user_id }}">{{ username }}</a> on jakanut {{ activity.recipe_count }} reseptiä</p>
+    <p><a href="/user/{{ user_id }}">{{ username }}</a> on antanut {{ activity.review_count }} arvostelua</p>
 </div>
 {% for r in user_recipes %}
 <div class="item">

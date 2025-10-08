@@ -22,7 +22,7 @@
 {% if session.username == recipe.username %}
 <div class="header">
   <form action="/edit/{{ recipe.id }}">
-    <button type="submit">Muokkaa</button>
+    <button type="submit">Muokkaa reseptiä</button>
   </form>
 </div>
 {% endif %}
@@ -84,7 +84,7 @@
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     </form>
     {% else %}
-    Arvostelun luonti vaatii kirjautumista:
+    Arvostelun antaminen vaatii kirjautumista:
     <div class="nav">
       <form action="/login">
         <button type="submit">Kirjaudu sisään</button>
