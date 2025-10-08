@@ -130,6 +130,9 @@ def create_user():
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
     session["csrf_token"] = token_hex(16)
+
+    if next_page == "/login" or not next_page.startswith("/"):
+        next_page = "/"
     return redirect(next_page)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -169,6 +172,9 @@ def login():
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
     session["csrf_token"] = token_hex(16)
+
+    if next_page == "/register" or not next_page.startswith("/"):
+        next_page = "/"
     return redirect(next_page)
 
 @app.route("/logout")

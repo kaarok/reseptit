@@ -52,7 +52,10 @@
         <input type="hidden" name="next_page" value="/" />
         {% endif %}
       </form>
+      <br>
       <form action="/register">
+        Eikö sinulla vielä ole tiliä?
+        <br>
         <button type="submit">Uusi käyttäjä</button>
         {% if next_page %}
         <input type="hidden" name="next_page" value="{{ next_page }}" />

@@ -66,9 +66,10 @@
         <input type="hidden" name="next_page" value="/" />
         {% endif %}
       </form>
-
+      <br>
       <form action="/login">
         Oletko jo luonut käyttäjän?
+        <br>
         <button type="submit">Kirjaudu sisään</button>
         {% if next_page %}
         <input type="hidden" name="next_page" value="{{ next_page }}" />
