@@ -60,8 +60,22 @@
         <p class="error">{{ message }}</p>
         {% endfor %}
         <button type="submit">Luo tunnus</button>
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
       </form>
 
+      <form action="/login">
+        Oletko jo luonut käyttäjän?
+        <button type="submit">Kirjaudu sisään</button>
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
+      </form>
       
     </div>
   </div>

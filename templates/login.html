@@ -15,7 +15,7 @@
       Kirjaudu sisään
     </div>
     <div class="item">
-      <form action="/login" method="post">
+      <form action="/login" method="POST">
         <p>
           Tunnus: <br />
           <input 
@@ -46,9 +46,19 @@
         <p class="error">{{ message }}</p>
         {% endfor %}
         <button type="submit">Kirjaudu</button>
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
       </form>
       <form action="/register">
         <button type="submit">Uusi käyttäjä</button>
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
       </form>
     </div>
   </div>

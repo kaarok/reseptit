@@ -94,7 +94,8 @@ def register():
         "register.html",
         username="",
         password1="",
-        password2=""
+        password2="",
+        next_page=request.referrer
         )
 
 @app.route("/create_user", methods=["POST"])
@@ -102,6 +103,7 @@ def create_user():
     username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    next_page = request.form["next_page"]
     check_user_valid(username, password1)
 
     error = False
@@ -128,7 +130,7 @@ def create_user():
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
     session["csrf_token"] = token_hex(16)
-    return redirect("/")
+    return redirect(next_page)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -139,41 +141,46 @@ def login():
         if request.method == "GET":
             return render_template(
                 "login.html",
-                username=""
+                username="",
+                next_page=request.referrer
                 )
 
     username = request.form["username"]
     password = request.form["password"]
+    next_page = request.form["next_page"]
 
     password_hash = queries.get_password_hash(username)
     if not password_hash:
         flash("*käyttäjänimeä ei löytynyt")
         return render_template(
             "login.html",
-            username=""
+            username="",
+            next_page=next_page
             )
 
     if not check_password_hash(password_hash, password):
         flash("*väärä salasana")
         return render_template(
             "login.html",
-            username=username
+            username=username,
+            next_page=next_page
             )
 
     session["username"] = username
     session["user_id"] = queries.get_user_id_by_name(username)
     session["csrf_token"] = token_hex(16)
-    return redirect("/")
+    return redirect(next_page)
 
 @app.route("/logout")
 def logout():
+    next_page = request.referrer
     try:
         del session["username"]
         del session["user_id"]
         del session["csrf_token"]
-        return redirect("/")
+        return redirect(next_page)
     except KeyError:
-        return redirect("/")
+        return redirect(next_page)
 
 # --------------------
 # RECIPES
