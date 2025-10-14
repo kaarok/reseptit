@@ -86,6 +86,8 @@ h1, h2, h3 {
   display: block;
   font-size: 1.3em;
   font-weight: bold;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .content {
@@ -101,6 +103,8 @@ tr {
     color: var(--black);
 
     padding: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
     margin: 1em;
 
     border-radius: 12px;

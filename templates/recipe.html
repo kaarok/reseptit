@@ -26,26 +26,25 @@
   </form>
 </div>
 {% endif %}
-<div class="item">
-  <p class="recipe_title">{{ recipe.title }}</p>
-  <br>
-  <table>
-    {% for i in ingredients %}
-    <tr>
-      <td>{{ i }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-  <br>
-  <ol>
-    {% for i in instructions %}
-    <li>{{ i | show_lines }}</li>
+<div class="content">
+  <div class="item">
+    <p class="recipe_title">{{ recipe.title }}</p>
+    <table>
+      {% for i in ingredients %}
+      <tr>
+        <td>{{ i }}</td>
+      </tr>
+      {% endfor %}
+    </table>
     <br>
-    {% endfor %}
-  </ol>
-  <p><i>{{ recipe.username }}</i></p>
+    <ol>
+      {% for i in instructions %}
+      <li>{{ i | show_lines }}</li>
+      <br>
+      {% endfor %}
+    </ol>
+  </div>
 </div>
-
 <div class="header">
   <h2>Arvostelut</h2>
 </div>
@@ -106,16 +105,16 @@
     </p>
   </div>
   {% endfor %}
-  {% if page_count > 1 %}
-  <div class="header">
-    {% if page > 1 %}
-    <a href="{{ url_for('show_recipe', recipe_id=recipe.id, page=page - 1) }}"><button>Edellinen</button></a>
-    {% endif %}
-    Sivu {{ page }} / {{ page_count }}
-    {% if page < page_count %}
-    <a href="{{ url_for('show_recipe', recipe_id=recipe.id, page=page + 1) }}"><button>Seuraava</button></a>
-    {% endif %}
-  </div>
-{% endif %}
 </div>
+{% if page_count > 1 %}
+<div class="header">
+  {% if page > 1 %}
+  <a href="{{ url_for('show_recipe', recipe_id=recipe.id, page=page - 1) }}"><button>Edellinen</button></a>
+  {% endif %}
+  Sivu {{ page }} / {{ page_count }}
+  {% if page < page_count %}
+  <a href="{{ url_for('show_recipe', recipe_id=recipe.id, page=page + 1) }}"><button>Seuraava</button></a>
+  {% endif %}
+</div>
+{% endif %}
 {% endblock %}

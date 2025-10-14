@@ -15,40 +15,70 @@
       <h2>{% block name %}{% endblock %}</h2>
     </div>
     <form action="{{ form_action }}" method="POST">
-      <div class="item">
-        {% for message in get_flashed_messages() %}
-        <p class="error">{{ message }}</p>
-        {% endfor %}
-        <p>
-          <h3>Reseptin nimi:</h3>
-          <br>
-          <input 
-            type="text" 
-            name="title" 
-            value="{{ title }}" 
-            class="textbox"
-            size="{{ config['RECIPE_TITLE_LENGTH'][1] }}"
-            minlength="{{ config['RECIPE_TITLE_LENGTH'][0] }}" 
-            maxlength="{{ config['RECIPE_TITLE_LENGTH'][1] }}" 
-            required
-          />
-        </p>
-      </div>
-      <div class="item">
+      <div class="content">
+        <div class="item">
+          {% for message in get_flashed_messages() %}
+          <p class="error">{{ message }}</p>
+          {% endfor %}
+            <h3>Reseptin nimi:</h3>
+            <br>
+            <input 
+              type="text" 
+              name="title" 
+              value="{{ title }}" 
+              class="textbox"
+              size="{{ config['RECIPE_TITLE_LENGTH'][1] }}"
+              minlength="{{ config['RECIPE_TITLE_LENGTH'][0] }}" 
+              maxlength="{{ config['RECIPE_TITLE_LENGTH'][1] }}" 
+              required
+            />
+          </p>
+        </div>
+        <div class="item">
+            <table>
+              <h3>Ainesosat:</h3>
+              {% for i in ingredients %}
+              <tr>
+                <td>
+                  <input 
+                    type="text" 
+                    name="ingredient" 
+                    value="{{ i }}" 
+                    class="textbox"
+                    size="{{ config['INGREDIENT_LENGTH'][1] }}"
+                    minlength="{{ config['INGREDIENT_LENGTH'][0] }}" 
+                    maxlength="{{ config['INGREDIENT_LENGTH'][1] }}"
+                  />
+                </td>
+              </tr>
+              {% endfor %}
+              <tr>
+                <td>
+                  <button 
+                    type="submit" 
+                    name="action" 
+                    value="ingredients_add_row"
+                  >Uusi ainesosa</button>
+                </td>
+              </tr>
+            </table>
+            
+        </div>
+        <div class="item">
           <table>
-            <h3>Ainesosat:</h3>
-            {% for i in ingredients %}
+            <h3>Ohjeet:</h3>
+            {% for i in instructions %}
             <tr>
               <td>
-                <input 
+                <textarea 
                   type="text" 
-                  name="ingredient" 
-                  value="{{ i }}" 
-                  class="textbox"
-                  size="{{ config['INGREDIENT_LENGTH'][1] }}"
-                  minlength="{{ config['INGREDIENT_LENGTH'][0] }}" 
-                  maxlength="{{ config['INGREDIENT_LENGTH'][1] }}"
-                />
+                  name="instruction" 
+                  class="textbox" 
+                  cols="{{ config['INGREDIENT_LENGTH'][1] }}"
+                  rows="5" 
+                  minlength="{{ config['INSTRUCTION_LENGTH'][0] }}"
+                  maxlength="{{ config['INSTRUCTION_LENGTH'][1] }}"
+                >{{ i }}</textarea>
               </td>
             </tr>
             {% endfor %}
@@ -57,86 +87,57 @@
                 <button 
                   type="submit" 
                   name="action" 
-                  value="ingredients_add_row"
-                >Uusi ainesosa</button>
+                  value="instructions_add_row"
+                >Uusi ohje</button>
               </td>
             </tr>
           </table>
-          
-      </div>
-      <div class="item">
-        <table>
-          <h3>Ohjeet:</h3>
-          {% for i in instructions %}
-          <tr>
-            <td>
-              <textarea 
-                type="text" 
-                name="instruction" 
-                class="textbox" 
-                cols="{{ config['INGREDIENT_LENGTH'][1] }}"
-                rows="5" 
-                minlength="{{ config['INSTRUCTION_LENGTH'][0] }}"
-                maxlength="{{ config['INSTRUCTION_LENGTH'][1] }}"
-              >{{ i }}</textarea>
-            </td>
-          </tr>
-          {% endfor %}
-          <tr>
-            <td>
-              <button 
-                type="submit" 
-                name="action" 
-                value="instructions_add_row"
-              >Uusi ohje</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="item">
-        <table>
-          <h3>Hakusanat:</h3>
-          {% for tag in tags %}
-          <tr>
-            <td>
-              <input 
-                type="text" 
-                name="tags" 
-                value="{{ tag }}" 
-                class="textbox" 
-                list="tag_options" 
-                size="{{ config['TAG_LENGTH'][1] }}"
-                minlength="{{ config['TAG_LENGTH'][0] }}"
-                maxlength="{{ config['TAG_LENGTH'][1] }}"
-              />
-            </td>
-          </tr>
-          {% endfor %}
-          <datalist id="tag_options">
-            {% if all_tags %}
-            {% for tag in all_tags %}
-            <option value="{{ tag }}">
+        </div>
+        <div class="item">
+          <table>
+            <h3>Hakusanat:</h3>
+            {% for tag in tags %}
+            <tr>
+              <td>
+                <input 
+                  type="text" 
+                  name="tags" 
+                  value="{{ tag }}" 
+                  class="textbox" 
+                  list="tag_options" 
+                  size="{{ config['TAG_LENGTH'][1] }}"
+                  minlength="{{ config['TAG_LENGTH'][0] }}"
+                  maxlength="{{ config['TAG_LENGTH'][1] }}"
+                />
+              </td>
+            </tr>
             {% endfor %}
-            {% endif %}
-          </datalist>
-          <tr>
-            <td>
-              <button 
-                type="submit" 
-                name="action" 
-                value="tags_add_row"
-              >Uusi hakusana</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="header">
-        <button
-          type="submit" 
-          name="action" 
-          value="publish"
-        >Tallenna</button>
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            <datalist id="tag_options">
+              {% if all_tags %}
+              {% for tag in all_tags %}
+              <option value="{{ tag }}">
+              {% endfor %}
+              {% endif %}
+            </datalist>
+            <tr>
+              <td>
+                <button 
+                  type="submit" 
+                  name="action" 
+                  value="tags_add_row"
+                >Uusi hakusana</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        </div>
+        <div class="header">
+          <button
+            type="submit" 
+            name="action" 
+            value="publish"
+          >Tallenna</button>
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       </form>
       {% block actions %}
       {% endblock %}
