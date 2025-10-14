@@ -46,8 +46,8 @@ button {
     background-color: var(--red);
     color: var(--white);
     text-decoration: solid;
-    font-weight: bold;
-    font-size: large;
+    font-weight: bolder;
+    font-size: 1.2em;
 
     padding: 0.2em;
     margin: 0.5em;
@@ -80,6 +80,12 @@ button:hover {
 
 h1, h2, h3 {
     margin: 0;
+}
+
+.recipe_title {
+  display: block;
+  font-size: 1.3em;
+  font-weight: bold;
 }
 
 .content {

@@ -119,17 +119,18 @@ def get_recipes(page: int = 1) -> list[dict]:
     limit = config.PAGE_SIZE
     offset = limit * (page - 1)
     sql = """
-        SELECT r.id,
-               r.title,
-               r.user_id,
-               r.created_at,
-               u.username,
-               r.rating_sum,
-               r.rating_count,
-               CASE
-                   WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
-                   ELSE NULL
-               END AS avg_rating
+        SELECT
+            r.id,
+            r.title,
+            r.user_id,
+            r.created_at,
+            u.username,
+            r.rating_sum,
+            r.rating_count,
+            CASE
+                WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                ELSE NULL
+            END AS avg_rating
         FROM recipes r
             LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC
@@ -142,17 +143,18 @@ def get_user_recipes(user_id: int, page: int = 1) -> list[dict]:
     limit = config.PAGE_SIZE
     offset = limit * (page - 1)
     sql = """
-        SELECT r.id,
-        r.title,
-        r.user_id,
-        r.created_at,
-        u.username,
-        r.rating_sum,
-        r.rating_count,
-        CASE
-            WHEN r.rating_count > 0 THEN r.rating_sum * 1.0 / r.rating_count
-            ELSE NULL
-        END AS avg_rating
+        SELECT 
+            r.id,
+            r.title,
+            r.user_id,
+            r.created_at,
+            u.username,
+            r.rating_sum,
+            r.rating_count,
+            CASE
+                WHEN r.rating_count > 0 THEN ROUND(r.rating_sum * 1.0 / r.rating_count, 1)
+                ELSE NULL
+            END AS avg_rating
         FROM recipes r
         LEFT JOIN users u ON u.id = r.user_id
         WHERE r.user_id = ?

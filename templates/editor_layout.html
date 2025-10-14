@@ -14,13 +14,13 @@
     <div class="header">
       <h2>{% block name %}{% endblock %}</h2>
     </div>
-    <div class="item">
-      <form action="{{ form_action }}" method="POST">
+    <form action="{{ form_action }}" method="POST">
+      <div class="item">
         {% for message in get_flashed_messages() %}
         <p class="error">{{ message }}</p>
         {% endfor %}
         <p>
-          Reseptin nimi:
+          <h3>Reseptin nimi:</h3>
           <br>
           <input 
             type="text" 
@@ -33,37 +33,40 @@
             required
           />
         </p>
-        <br><br>
+      </div>
+      <div class="item">
+          <table>
+            <h3>Ainesosat:</h3>
+            {% for i in ingredients %}
+            <tr>
+              <td>
+                <input 
+                  type="text" 
+                  name="ingredient" 
+                  value="{{ i }}" 
+                  class="textbox"
+                  size="{{ config['INGREDIENT_LENGTH'][1] }}"
+                  minlength="{{ config['INGREDIENT_LENGTH'][0] }}" 
+                  maxlength="{{ config['INGREDIENT_LENGTH'][1] }}"
+                />
+              </td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td>
+                <button 
+                  type="submit" 
+                  name="action" 
+                  value="ingredients_add_row"
+                >Uusi ainesosa</button>
+              </td>
+            </tr>
+          </table>
+          
+      </div>
+      <div class="item">
         <table>
-          Ainesosat:
-          {% for i in ingredients %}
-          <tr>
-            <td>
-              <input 
-                type="text" 
-                name="ingredient" 
-                value="{{ i }}" 
-                class="textbox"
-                size="{{ config['INGREDIENT_LENGTH'][1] }}"
-                minlength="{{ config['INGREDIENT_LENGTH'][0] }}" 
-                maxlength="{{ config['INGREDIENT_LENGTH'][1] }}"
-              />
-            </td>
-          </tr>
-          {% endfor %}
-          <tr>
-            <td>
-              <button 
-                type="submit" 
-                name="action" 
-                value="ingredients_add_row"
-              >Uusi ainesosa</button>
-            </td>
-          </tr>
-        </table>
-        <br><br>
-        <table>
-          Ohjeet:
+          <h3>Ohjeet:</h3>
           {% for i in instructions %}
           <tr>
             <td>
@@ -89,9 +92,10 @@
             </td>
           </tr>
         </table>
-        <br><br>
+      </div>
+      <div class="item">
         <table>
-          Hakusanat:
+          <h3>Hakusanat:</h3>
           {% for tag in tags %}
           <tr>
             <td>
@@ -125,7 +129,8 @@
             </td>
           </tr>
         </table>
-        <br><br><br>
+      </div>
+      <div class="header">
         <button
           type="submit" 
           name="action" 
