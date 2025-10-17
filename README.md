@@ -11,14 +11,6 @@
 - Reseptistä näytetään arvostelut ja keskimääräinen arvosana.
 - Käyttäjäsivu näyttää, listan käyttäjän lisäämistä resepteistä ja montako reseptiä ja arvostelua käyttäjä on lisännyt.
 
-### Tulossa
-- Käyttäjä pystyy lisäämään reseptille kuvan.
-- Ulkonäkö/käytettävyys muutoksia:
-  - Fontit suuremmiksi monessa kohtaa.
-  - Painikkeet selkeämmiksi. (Erottelua tärkeyden mukaan, luettavammat värit/fontit)
-  - Käyttäjälle parempi palaute arvostelun lähetyksestä.
-
-
 ## Testaus
 Asenna 'flask'-kirjasto:
 ```
